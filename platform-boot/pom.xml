@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.train</groupId>
+        <artifactId>platform</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>platform-boot</artifactId>
+    <packaging>jar</packaging>
+	<name>platform-boot</name>
+
+    <description>platform 单体版本启动</description>
+
+    <dependencies>
+        <!--必备：认证中心模块-->
+        <dependency>
+            <groupId>com.train</groupId>
+            <artifactId>platform-auth</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--必备：用户管理模块-->
+        <dependency>
+            <groupId>com.train</groupId>
+            <artifactId>platform-upms-biz</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--可选：代码生成模块-->
+<!--        <dependency>-->
+<!--            <groupId>com.train</groupId>-->
+<!--            <artifactId>platform-codegen</artifactId>-->
+<!--            <version>${revision}</version>-->
+<!--        </dependency>-->
+        <!--可选：定时任务模块-->
+        <dependency>
+            <groupId>com.train</groupId>
+            <artifactId>platform-quartz</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--安全模块-->
+        <dependency>
+            <groupId>com.train</groupId>
+            <artifactId>platform-common-security</artifactId>
+        </dependency>
+        <!-- 接口文档UI  -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springboot</groupId>
+            <artifactId>knife4j-boot-openapi3-ui</artifactId>
+            <version>${knife4j.version}</version>
+        </dependency>
+        <!--接口文档-->
+        <dependency>
+            <groupId>com.train</groupId>
+            <artifactId>platform-common-swagger</artifactId>
+        </dependency>
+        <!--undertow容器-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+		</dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+            </plugin>
+
+<!--			<plugin>-->
+<!--				<groupId>net.roseboy</groupId>-->
+<!--				<artifactId>classfinal-maven-plugin</artifactId>-->
+<!--				<version>1.2.1</version>-->
+<!--				<configuration>-->
+<!--					&lt;!&ndash;设置启动 jar 包的密码，加密打包之后 pom.xml 会被删除，不用担心在 jar 包里找到此密码&ndash;&gt;-->
+<!--					<password>novel</password>-->
+<!--					&lt;!&ndash; 加密的包名，如果有多个就用逗号隔开 &ndash;&gt;-->
+<!--					<packages>com.train.platform</packages>-->
+<!--					&lt;!&ndash; 加密的配置文件，如果有多个就用逗号隔开 &ndash;&gt;-->
+<!--					<cfgfiles>application.yml,application-dev.yml,application-prod.yml</cfgfiles>-->
+<!--					&lt;!&ndash; 不需要加密的包名，如果有多个就用逗号隔开 &ndash;&gt;-->
+<!--					<excludes>org.spring</excludes>-->
+<!--					&lt;!&ndash; jar 包中 lib 目录下需要加密的 jar 依赖，如果有多个就用逗号隔开 &ndash;&gt;-->
+<!--					<libjars>novel-common.jar</libjars>-->
+<!--					&lt;!&ndash; 机器码，在绑定的机器生成，加密后只可在此机器上运行 &ndash;&gt;-->
+<!--					<code>BF9B6C485F95706D72B1C17D5DCFE5D9D41D8CD98F00B204E9800998ECF8427ED41D8CD98F00B204E9800998ECF8427E</code>-->
+<!--				</configuration>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<phase>package</phase>-->
+<!--						<goals>-->
+<!--							<goal>classFinal</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
+        </plugins>
+    </build>
+</project>

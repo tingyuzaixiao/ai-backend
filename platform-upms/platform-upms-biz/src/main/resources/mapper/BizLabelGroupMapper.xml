@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizLabelGroupMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.vo.LabelGroupVO">
+		<id property="groupId" column="group_id" jdbcType="BIGINT"/>
+		<result property="groupName" column="group_name" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+		<collection property="tagList" ofType="com.train.platform.admin.api.entity.BizLabelTag"
+					select="com.train.platform.admin.mapper.BizLabelTagMapper.selectLabelTagByGroupId"
+					column="group_id">
+		</collection>
+	</resultMap>
+	<resultMap id="GroupResultMap" type="com.train.platform.admin.api.vo.LabelGroupVO">
+		<id property="groupId" column="group_id" jdbcType="BIGINT"/>
+		<result property="groupName" column="group_name" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		group_id,group_name,description,
+        del_flag,create_time,create_by,
+        update_time,update_by
+	</sql>
+	<select id="selectLabelGroupById" resultMap="BaseResultMap"
+			parameterType="java.lang.Long">
+		select alg.group_id,
+			   alg.group_name,
+			   alg.description,
+			   alg.create_time,
+			   alg.create_by,
+			   alg.update_time,
+			   alg.update_by
+		from aircas_label_group alg
+		where alg.del_flag='0' and alg.group_id = #{groupId}
+	</select>
+	<select id="selectLabelGroupPage" resultMap="BaseResultMap">
+		select alg.group_id,
+			   alg.group_name,
+			   alg.description,
+			   alg.create_time,
+			   alg.create_by,
+			   alg.update_time,
+			   alg.update_by
+		from aircas_label_group alg
+		<where>
+			alg.del_flag = '0'
+			<if test="query.groupName != null and query.groupName != ''">
+				and alg.group_name like concat ('%',#{query.groupName},'%')
+			</if>
+			<if test="query.groupId != null and query.groupId != ''">
+				and alg.group_id = #{query.groupId}
+			</if>
+		</where>
+		order by alg.create_time desc
+	</select>
+	<select id="listLabelGroup" resultMap="BaseResultMap">
+		select alg.group_id,
+		alg.group_name,
+		alg.description,
+		alg.create_time,
+		alg.create_by,
+		alg.update_time,
+		alg.update_by
+		from aircas_label_group alg
+		<where>
+			alg.del_flag = '0'
+			<if test="query.groupName != null and query.groupName != ''">
+				and alg.group_name like concat ('%',#{query.groupName},'%')
+			</if>
+			<if test="query.groupId != null and query.groupId != ''">
+				and alg.group_id = #{query.groupId}
+			</if>
+		</where>
+		order by alg.create_time desc
+	</select>
+</mapper>

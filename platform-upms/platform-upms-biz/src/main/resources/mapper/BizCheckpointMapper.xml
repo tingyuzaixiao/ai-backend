@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizCheckpointMapper">
+
+    <resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.BizCheckpoint">
+            <id property="checkpointId" column="checkpoint_id" jdbcType="BIGINT"/>
+            <result property="experimentId" column="experiment_id" jdbcType="BIGINT"/>
+            <result property="modelId" column="model_id" jdbcType="BIGINT"/>
+            <result property="programId" column="program_id" jdbcType="BIGINT"/>
+            <result property="totalBatches" column="total_batches" jdbcType="BIGINT"/>
+            <result property="checkpointNames" column="checkpoint_names" jdbcType="VARCHAR"/>
+            <result property="checkpointPath" column="checkpoint_path" jdbcType="VARCHAR"/>
+            <result property="state" column="state" jdbcType="VARCHAR"/>
+            <result property="indexJson" column="index_json" jdbcType="VARCHAR"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        checkpoint_id,experiment_id,model_id,
+        program_id,total_batches,checkpoint_names,
+        checkpoint_path,state,index_json,
+        create_by,update_by,create_time,
+        update_time,del_flag
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from aircas_checkpoint
+        where  checkpoint_id = #{checkpointId,jdbcType=BIGINT} 
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from aircas_checkpoint
+        where  checkpoint_id = #{checkpointId,jdbcType=BIGINT} 
+    </delete>
+    <insert id="insert" keyColumn="checkpoint_id" keyProperty="checkpointId" parameterType="com.train.platform.admin.api.entity.BizCheckpoint" useGeneratedKeys="true">
+        insert into aircas_checkpoint
+        ( checkpoint_id,experiment_id,model_id
+        ,program_id,total_batches,checkpoint_names
+        ,checkpoint_path,state,index_json
+        ,create_by,update_by,create_time
+        ,update_time,del_flag)
+        values (#{checkpointId,jdbcType=BIGINT},#{experimentId,jdbcType=BIGINT},#{modelId,jdbcType=BIGINT}
+        ,#{programId,jdbcType=BIGINT},#{totalBatches,jdbcType=BIGINT},#{checkpointNames,jdbcType=VARCHAR}
+        ,#{checkpointPath,jdbcType=VARCHAR},#{state,jdbcType=VARCHAR},#{indexJson,jdbcType=VARCHAR}
+        ,#{createBy,jdbcType=VARCHAR},#{updateBy,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP}
+        ,#{updateTime,jdbcType=TIMESTAMP},#{delFlag,jdbcType=CHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="checkpoint_id" keyProperty="checkpointId" parameterType="com.train.platform.admin.api.entity.BizCheckpoint" useGeneratedKeys="true">
+        insert into aircas_checkpoint
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="checkpointId != null">checkpoint_id,</if>
+                <if test="experimentId != null">experiment_id,</if>
+                <if test="modelId != null">model_id,</if>
+                <if test="programId != null">program_id,</if>
+                <if test="totalBatches != null">total_batches,</if>
+                <if test="checkpointNames != null">checkpoint_names,</if>
+                <if test="checkpointPath != null">checkpoint_path,</if>
+                <if test="state != null">state,</if>
+                <if test="indexJson != null">index_json,</if>
+                <if test="createBy != null">create_by,</if>
+                <if test="updateBy != null">update_by,</if>
+                <if test="createTime != null">create_time,</if>
+                <if test="updateTime != null">update_time,</if>
+                <if test="delFlag != null">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="checkpointId != null">#{checkpointId,jdbcType=BIGINT},</if>
+                <if test="experimentId != null">#{experimentId,jdbcType=BIGINT},</if>
+                <if test="modelId != null">#{modelId,jdbcType=BIGINT},</if>
+                <if test="programId != null">#{programId,jdbcType=BIGINT},</if>
+                <if test="totalBatches != null">#{totalBatches,jdbcType=BIGINT},</if>
+                <if test="checkpointNames != null">#{checkpointNames,jdbcType=VARCHAR},</if>
+                <if test="checkpointPath != null">#{checkpointPath,jdbcType=VARCHAR},</if>
+                <if test="state != null">#{state,jdbcType=VARCHAR},</if>
+                <if test="indexJson != null">#{indexJson,jdbcType=VARCHAR},</if>
+                <if test="createBy != null">#{createBy,jdbcType=VARCHAR},</if>
+                <if test="updateBy != null">#{updateBy,jdbcType=VARCHAR},</if>
+                <if test="createTime != null">#{createTime,jdbcType=TIMESTAMP},</if>
+                <if test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP},</if>
+                <if test="delFlag != null">#{delFlag,jdbcType=CHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.train.platform.admin.api.entity.BizCheckpoint">
+        update aircas_checkpoint
+        <set>
+                <if test="experimentId != null">
+                    experiment_id = #{experimentId,jdbcType=BIGINT},
+                </if>
+                <if test="modelId != null">
+                    model_id = #{modelId,jdbcType=BIGINT},
+                </if>
+                <if test="programId != null">
+                    program_id = #{programId,jdbcType=BIGINT},
+                </if>
+                <if test="totalBatches != null">
+                    total_batches = #{totalBatches,jdbcType=BIGINT},
+                </if>
+                <if test="checkpointNames != null">
+                    checkpoint_names = #{checkpointNames,jdbcType=VARCHAR},
+                </if>
+                <if test="checkpointPath != null">
+                    checkpoint_path = #{checkpointPath,jdbcType=VARCHAR},
+                </if>
+                <if test="state != null">
+                    state = #{state,jdbcType=VARCHAR},
+                </if>
+                <if test="indexJson != null">
+                    index_json = #{indexJson,jdbcType=VARCHAR},
+                </if>
+                <if test="createBy != null">
+                    create_by = #{createBy,jdbcType=VARCHAR},
+                </if>
+                <if test="updateBy != null">
+                    update_by = #{updateBy,jdbcType=VARCHAR},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="updateTime != null">
+                    update_time = #{updateTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="delFlag != null">
+                    del_flag = #{delFlag,jdbcType=CHAR},
+                </if>
+        </set>
+        where   checkpoint_id = #{checkpointId,jdbcType=BIGINT} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.train.platform.admin.api.entity.BizCheckpoint">
+        update aircas_checkpoint
+        set 
+            experiment_id =  #{experimentId,jdbcType=BIGINT},
+            model_id =  #{modelId,jdbcType=BIGINT},
+            program_id =  #{programId,jdbcType=BIGINT},
+            total_batches =  #{totalBatches,jdbcType=BIGINT},
+            checkpoint_names =  #{checkpointNames,jdbcType=VARCHAR},
+            checkpoint_path =  #{checkpointPath,jdbcType=VARCHAR},
+            state =  #{state,jdbcType=VARCHAR},
+            index_json =  #{indexJson,jdbcType=VARCHAR},
+            create_by =  #{createBy,jdbcType=VARCHAR},
+            update_by =  #{updateBy,jdbcType=VARCHAR},
+            create_time =  #{createTime,jdbcType=TIMESTAMP},
+            update_time =  #{updateTime,jdbcType=TIMESTAMP},
+            del_flag =  #{delFlag,jdbcType=CHAR}
+        where   checkpoint_id = #{checkpointId,jdbcType=BIGINT} 
+    </update>
+</mapper>

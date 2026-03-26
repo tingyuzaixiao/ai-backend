@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.AlgoServerResourceMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.AlgoServerResource">
+		<id property="id" column="id" jdbcType="BIGINT"/>
+		<result property="server" column="server" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="params" column="params" jdbcType="VARCHAR"/>
+		<result property="status" column="status" jdbcType="VARCHAR"/>
+		<result property="heartbeatTime" column="heartbeat_time" jdbcType="TIMESTAMP"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="delFlag" column="del_flag" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<sql id="columns">
+		id,
+		server,
+		description,
+		params,
+		status,
+		heartbeat_time,
+		create_time,
+		update_time,
+		del_flag
+	</sql>
+
+	<select id="getAlgoServerResources" resultMap="BaseResultMap">
+		SELECT <include refid="columns" />
+		FROM aircas_algo_server
+		<where>
+			<if test="query.id != null">
+				AND id = #{query.id}
+			</if>
+			<if test="query.server != null and query.server.trim() != ''">
+				AND server = #{query.server}
+			</if>
+			<if test="query.heartbeatTime != null">
+				AND heartbeat_time &gt; #{query.heartbeatTime}
+			</if>
+			<if test="query.delFlag != null">
+				AND del_flag = #{query.delFlag}
+			</if>
+		</where>
+	</select>
+
+	<update id="logicDeleteByHeartbeat">
+		UPDATE aircas_algo_server
+		SET del_flag = '1', update_time = #{updateTime}
+		WHERE heartbeat_time &lt; #{heartbeatTime} AND del_flag = '0'
+	</update>
+
+	<update id="updateHeartbeat">
+		UPDATE aircas_algo_server
+		SET heartbeat_time = #{query.heartbeatTime}, update_time = #{query.updateTime}, del_flag = '0'
+		<where>
+			<if test="query.id != null">
+				AND id = #{query.id}
+			</if>
+			<if test="query.server != null and query.server.trim() != ''">
+				AND server = #{query.server}
+			</if>
+		</where>
+	</update>
+
+	<update id="updateByRegister">
+		UPDATE aircas_algo_server
+		<set>
+			del_flag = '0',
+			<if test="query.server != null">
+				server = #{query.server},
+			</if>
+			<if test="query.description != null">
+				description = #{query.description},
+			</if>
+			<if test="query.params != null">
+				params = #{query.params},
+			</if>
+			<if test="query.status != null">
+				status = #{query.status},
+			</if>
+			<if test="query.heartbeatTime != null">
+				heartbeat_time = #{query.heartbeatTime},
+			</if>
+			<if test="query.updateTime != null">
+				update_time = #{query.updateTime},
+			</if>
+		</set>
+		WHERE id = #{query.id}
+	</update>
+</mapper>

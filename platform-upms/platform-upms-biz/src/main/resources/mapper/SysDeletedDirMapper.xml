@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.SysDeletedDirMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.SysDeletedDir">
+		<id property="dirId" column="dir_id" jdbcType="BIGINT"/>
+		<result property="dirPath" column="dir_path" jdbcType="VARCHAR"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="fileType" column="file_type" jdbcType="CHAR"/>
+		<result property="functionType" column="function_type" jdbcType="CHAR"/>
+		<result property="status" column="status" jdbcType="CHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+		<result property="delFlag" column="del_flag" jdbcType="CHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		dir_id,dir_path,file_name,
+        file_type,status,create_time,
+        update_time,create_by,update_by,
+        del_flag
+	</sql>
+	<update id="updateDeletedDirList" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+			update sys_deleted_dir
+			set
+			    `status` = #{item.status},
+			    `update_time` = Date_Format(now(),'%Y-%m-%d %H:%i:%s')
+			where `dir_id` = #{item.dirId}
+		</foreach>
+	</update>
+	<select id="selectSysDelDirsPage" resultMap="BaseResultMap">
+		select
+		sd.dir_id,sd.dir_path,sd.file_name,sd.file_type,sd.function_type,sd.status,sd.create_time,sd.update_time,sd.create_by,sd.update_by
+		from sys_deleted_dir sd
+		<where>
+			sd.del_flag = '0'
+			<if test="query.dirPath != null and query.dirPath != ''">
+				and sd.dir_path like concat('%', #{query.dirPath}, '%')
+			</if>
+			<if test="query.fileName != null and query.fileName != ''">
+				and sd.file_name like concat('%', #{query.fileName}, '%')
+			</if>
+			<if test="query.fileType != null and query.fileType != ''">
+				and sd.file_type = #{query.file_type}
+			</if>
+			<if test="query.status != null and query.status != ''">
+				and sd.status = #{query.status}
+			</if>
+		</where>
+	</select>
+	<select id="selectHistoryUnDeletedDir" resultMap="BaseResultMap">
+		select sd.dir_id,
+			   sd.dir_path,
+			   sd.file_name,
+			   sd.file_type,
+			   sd.function_type,
+			   sd.status,
+			   sd.create_time,
+			   sd.update_time,
+			   sd.create_by,
+			   sd.update_by
+		from sys_deleted_dir sd
+		where sd.del_flag = '0'
+		  and sd.status = ${status}
+		  and DATE_SUB(CURDATE(), INTERVAL ${delHistoryDirHours} HOUR ) &gt;= DATE(sd.create_time)
+	</select>
+</mapper>

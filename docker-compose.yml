@@ -1,0 +1,106 @@
+version: '3'
+services:
+  platform-mysql:
+    build:
+      context: ./db
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_ROOT_PASSWORD: root
+    restart: always
+    container_name: platform-mysql
+    image: platform-mysql
+    ports:
+      - 3306:3306
+    networks:
+      - spring_cloud_default
+
+  platform-redis:
+    image: registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/redis
+    ports:
+      - 6379:6379
+    restart: always
+    container_name: platform-redis
+    hostname: platform-redis
+    networks:
+      - spring_cloud_default
+
+  platform-register:
+    build:
+      context: ./platform-register
+    restart: always
+    ports:
+      - 8848:8848
+      - 9848:9848
+    container_name: platform-register
+    hostname: platform-register
+    image: platform-register
+    networks:
+      - spring_cloud_default
+
+  platform-gateway:
+    build:
+      context: ./platform-gateway
+    restart: always
+    ports:
+      - 9999:9999
+    container_name: platform-gateway
+    hostname: platform-gateway
+    image: platform-gateway
+    networks:
+      - spring_cloud_default
+
+  platform-auth:
+    build:
+      context: ./platform-auth
+    restart: always
+    container_name: platform-auth
+    hostname: platform-auth
+    image: platform-auth
+    networks:
+      - spring_cloud_default
+
+  platform-upms:
+    build:
+      context: ./platform-upms/platform-upms-biz
+    restart: always
+    container_name: platform-upms
+    hostname: platform-upms
+    image: platform-upms
+    networks:
+      - spring_cloud_default
+
+  platform-monitor:
+    build:
+      context: ./platform-visual/platform-monitor
+    restart: always
+    ports:
+      - 5001:5001
+    container_name: platform-monitor
+    hostname: platform-monitor
+    image: platform-monitor
+    networks:
+      - spring_cloud_default
+
+  platform-codegen:
+    build:
+      context: ./platform-visual/platform-codegen
+    restart: always
+    container_name: platform-codegen
+    hostname: platform-codegen
+    image: platform-codegen
+    networks:
+      - spring_cloud_default
+
+  platform-quartz:
+    build:
+      context: ./platform-visual/platform-quartz
+    restart: always
+    image: platform-quartz
+    container_name: platform-quartz
+    networks:
+      - spring_cloud_default
+
+networks:
+  spring_cloud_default:
+    name:  spring_cloud_default
+    driver: bridge

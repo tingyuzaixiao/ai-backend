@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.SysFileMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.SysFile">
+		<id property="id" column="id" jdbcType="BIGINT"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
+		<result property="original" column="original" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+		<result property="fileSize" column="file_size" jdbcType="BIGINT"/>
+		<result property="height" column="height" jdbcType="INTEGER"/>
+		<result property="width" column="width" jdbcType="INTEGER"/>
+		<result property="md5" column="md5" jdbcType="VARCHAR"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="delFlag" column="del_flag" jdbcType="CHAR"/>
+	</resultMap>
+
+	<resultMap id="FileVOResultMap" type="com.train.platform.admin.api.vo.FileVO">
+		<id property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
+		<result property="original" column="original" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+		<collection property="labelList" ofType="com.train.platform.admin.api.entity.BizLabel"
+					select="com.train.platform.admin.mapper.BizLabelMapper.selectLabelListByFileId"
+					column="{fileId=file_id,labelFileName=label_file_name,taskId=task_id,tagId=tag_id}">
+		</collection>
+	</resultMap>
+
+	<resultMap id="FileVOResultMap2" type="com.train.platform.admin.api.vo.FileVO">
+		<id property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
+		<result property="original" column="original" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<!-- 优化 嵌套结果（JOIN 查询） -->
+	<resultMap id="NewFileVOLabelResultMap" type="com.train.platform.admin.api.vo.FileVO">
+		<id property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="fileSize" column="file_size" jdbcType="BIGINT"/>
+		<result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
+		<result property="original" column="original" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+		<result property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<collection property="tagInfoList" ofType="com.train.platform.admin.api.vo.LabelTagInfoVO"
+					select="com.train.platform.admin.mapper.BizLabelTagInfoMapper.selectByLabelId"
+					column="label_id">
+		</collection>
+	</resultMap>
+	<resultMap id="NewFileVOLabelResultMap0512" type="com.train.platform.admin.api.vo.FileVO">
+		<id property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="fileSize" column="file_size" jdbcType="BIGINT"/>
+		<result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
+		<result property="original" column="original" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+		<result property="labelId" column="label_id" jdbcType="BIGINT"/>
+	</resultMap>
+
+	<!-- 优化 嵌套结果（JOIN 查询） -->
+	<resultMap id="FileVOLabelResultMap0512" type="com.train.platform.admin.api.vo.FileVO">
+		<id property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="fileSize" column="file_size" jdbcType="BIGINT"/>
+		<result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
+		<result property="original" column="original" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+		<collection property="tagInfoList" ofType="com.train.platform.admin.api.vo.LabelTagInfoVO"
+					select="com.train.platform.admin.mapper.BizLabelTagInfoMapper.selectByLabelId"
+					column="label_id">
+		</collection>
+	</resultMap>
+
+	<resultMap id="FileVONoLabelResultMap" type="com.train.platform.admin.api.vo.FileVO">
+		<id property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
+		<result property="original" column="original" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<resultMap id="LabelResultMap" type="com.train.platform.admin.api.entity.BizLabel">
+		<id property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<result property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="labelFileName" column="label_file_name" jdbcType="VARCHAR"/>
+		<result property="tagId" column="tag_id" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<resultMap id="LabelVOResultMap" type="com.train.platform.admin.api.vo.LabelVO">
+		<id property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<result property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="labelFileName" column="label_file_name" jdbcType="VARCHAR"/>
+		<result property="tagId" column="tag_id" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<collection property="tagInfoList" ofType="com.train.platform.admin.api.vo.LabelTagInfoVO"
+					select="com.train.platform.admin.mapper.BizLabelTagInfoMapper.selectByLabelId"
+					column="label_id">
+		</collection>
+	</resultMap>
+
+	<resultMap id="LabelTagInfoResultMap" type="com.train.platform.admin.api.vo.LabelTagInfoVO">
+		<id property="tagInfoId" column="tag_info_id" jdbcType="BIGINT"/>
+		<result property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<result property="tagId" column="tag_id" jdbcType="BIGINT"/>
+		<result property="tagInfo" column="tag_info" jdbcType="VARCHAR"/>
+		<result property="confidence" column="confidence" jdbcType="VARCHAR"/>
+		<result property="score" column="score" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id
+		,base_dataset_id,file_name,
+        bucket_name,original,type,
+        file_size,height,width,md5,create_by,
+        update_by,create_time,update_time,
+        del_flag
+	</sql>
+
+	<select id="selectListInFileIds" resultType="com.train.platform.admin.api.entity.SysFile">
+		select select
+		<include refid="Base_Column_List"/>
+		from sys_file
+		where id in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="selectListInFileIdStr" resultMap="BaseResultMap">
+		select select
+		<include refid="Base_Column_List"/>
+		from sys_file
+		where id in (${fileIdStr})
+	</select>
+	<select id="selectSysFilesPage" resultMap="BaseResultMap">
+		select
+		sf.id as
+		file_id,sf.base_dataset_id,sf.file_name,sf.md5,sf.file_size,sf.height,sf.width,sf.create_time,sf.bucket_name,
+		sf.original,sf.type
+		from sys_file sf
+		<where>
+			sf.del_flag = '0'
+			<if test="query.fileName != null and query.fileName != ''">
+				<bind name="fileNameLike" value="'%'+query.fileName+'%'"/>
+				AND sf.file_name LIKE #{fileNameLike}
+			</if>
+			<if test="query.original != null and query.original != ''">
+				<bind name="originalLike" value="'%'+query.original+'%'"/>
+				AND sf.original LIKE #{originalLike}
+			</if>
+			<if test="query.bucketName != null and query.bucketName != ''">
+				<bind name="bucketNameLike" value="'%'+query.bucketName+'%'"/>
+				AND sf.bucket_name LIKE #{bucketNameLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND sf.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.type != null and query.type != ''">
+				AND sf.type = #{query.type}
+			</if>
+			<!--            <if test="query.taskId != null and query.taskId != ''">-->
+			<!--                AND al.task_id = #{query.taskId}-->
+			<!--            </if>-->
+			<!--			<if test="query.tagId != null and query.tagId != ''">-->
+			<!--				AND al.tag_id like concat('%',#{query.tagId},'%')-->
+			<!--			</if>-->
+		</where>
+		order by sf.id desc,sf.original asc
+
+		<!--        <if test="_databaseId != 'mssql'">-->
+		<!--            ORDER BY create_time DESC-->
+		<!--        </if>-->
+	</select>
+	<select id="sumFileSizeByFileIds" resultType="java.lang.Long"
+			parameterType="java.util.List">
+		select sum(file_size) from sys_file
+		where id in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="selectFileVOList" resultMap="FileVOResultMap2">
+		select sf.id as file_id,sf.base_dataset_id,sf.file_name,sf.bucket_name,sf.original,sf.file_size,sf.type
+		,#{query.labelFileName} as label_file_name,sf.height,sf.width,sf.create_time
+		from sys_file sf
+		<where>
+			sf.del_flag = '0'
+			<if test="query.fileName != null and query.fileName != ''">
+				<bind name="fileNameLike" value="'%'+fileName+'%'"/>
+				AND file_name LIKE #{fileNameLike}
+			</if>
+			<if test="query.original != null and query.original != ''">
+				<bind name="originalLike" value="'%'+query.original+'%'"/>
+				AND original LIKE #{originalLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.fileIds != null and query.fileIds != ''">
+				AND id in
+				<foreach collection="query.fileIds" item="item" index="index" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+
+		<if test="_databaseId != 'mssql'">
+			ORDER BY create_time DESC
+		</if>
+	</select>
+	<select id="selectSysFilesLabeledPage" resultMap="FileVOResultMap2">
+		select
+		sf.id as file_id,sf.base_dataset_id,sf.file_name,sf.md5,sf.file_size,sf.create_time,sf.bucket_name,
+		sf.original,sf.type,#{query.labelFileName} as label_file_name,#{query.tagId} as tag_id,#{query.taskId} as task_id
+		from sys_file sf left join aircas_label al on sf.id = al.file_id
+		<where>
+			sf.del_flag = '0' and al.del_flag = '0'
+			<if test="query.fileName != null and query.fileName != ''">
+				<bind name="fileNameLike" value="'%'+query.fileName+'%'"/>
+				AND sf.file_name LIKE #{fileNameLike}
+			</if>
+			<if test="query.original != null and query.original != ''">
+				<bind name="originalLike" value="'%'+query.original+'%'"/>
+				AND sf.original LIKE #{originalLike}
+			</if>
+			<if test="query.bucketName != null and query.bucketName != ''">
+				<bind name="bucketNameLike" value="'%'+query.bucketName+'%'"/>
+				AND sf.bucket_name LIKE #{bucketNameLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND sf.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.type != null and query.type != ''">
+				AND sf.type = #{query.type}
+			</if>
+			<if test="query.taskId != null and query.taskId != ''">
+				AND al.task_id = #{query.taskId}
+			</if>
+			<if test="query.tagId != null and query.tagId != ''">
+				AND al.tag_id like concat('%',#{query.tagId},'%')
+			</if>
+		</where>
+		order by sf.id desc,sf.original asc
+	</select>
+	<select id="selectFileLabelList" resultMap="FileVOResultMap">
+		select
+		sf.id as file_id,sf.base_dataset_id,sf.file_name,sf.md5,sf.file_size,sf.create_time,sf.bucket_name,
+		sf.original,sf.type,#{query.labelFileName} as label_file_name,#{query.tagId} as tag_id,#{query.taskId} as
+		task_id
+		from sys_file sf
+		<where>
+			sf.del_flag = '0'
+			<if test="query.fileName != null and query.fileName != ''">
+				<bind name="fileNameLike" value="'%'+query.fileName+'%'"/>
+				AND sf.file_name LIKE #{fileNameLike}
+			</if>
+			<if test="query.original != null and query.original != ''">
+				<bind name="originalLike" value="'%'+query.original+'%'"/>
+				AND sf.original LIKE #{originalLike}
+			</if>
+			<if test="query.bucketName != null and query.bucketName != ''">
+				<bind name="bucketNameLike" value="'%'+query.bucketName+'%'"/>
+				AND sf.bucket_name LIKE #{bucketNameLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND sf.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.type != null and query.type != ''">
+				AND sf.type = #{query.type}
+			</if>
+		</where>
+		order by sf.id desc,sf.original asc
+	</select>
+	<select id="selectNewSysFilesPage0512" resultMap="FileVOLabelResultMap0512">
+        select
+        sf.id as file_id,sf.base_dataset_id,sf.file_name,sf.md5,sf.file_size,sf.create_time,sf.bucket_name,
+        sf.original,sf.type,al.label_id,al.tag_id,sf.width,sf.height,al.state
+        from sys_file sf
+        left join aircas_label al on sf.id = al.file_id
+        and al.del_flag = '0' and al.state = '0'
+        and al.task_id = #{query.taskId}
+        <where>
+			<if test="ids != null and !ids.isEmpty()">
+				sf.id IN
+				<foreach item="id" collection="ids" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+<!--            <if test="query.fileName != null and query.fileName != ''">-->
+<!--                <bind name="fileNameLike" value="'%'+query.fileName+'%'"/>-->
+<!--                AND sf.file_name LIKE #{fileNameLike}-->
+<!--            </if>-->
+<!--            <if test="query.original != null and query.original != ''">-->
+<!--                <bind name="originalLike" value="'%'+query.original+'%'"/>-->
+<!--                AND sf.original LIKE #{originalLike}-->
+<!--            </if>-->
+            <if test="query.bucketName != null and query.bucketName != ''">
+                <bind name="bucketNameLike" value="'%'+query.bucketName+'%'"/>
+                AND sf.bucket_name LIKE #{bucketNameLike}
+            </if>
+            <if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+                AND sf.base_dataset_id = #{query.baseDatasetId}
+            </if>
+            <if test="query.type != null and query.type != ''">
+                AND sf.type = #{query.type}
+            </if>
+            <!--            <if test="query.taskId != null and query.taskId != ''">-->
+            <!--                AND al.task_id = #{query.taskId}-->
+            <!--            </if>-->
+            <!--			<if test="query.tagId != null and query.tagId != ''">-->
+            <!--				AND al.tag_id like concat('%',#{query.tagId},'%')-->
+            <!--			</if>-->
+        </where>
+        order by sf.id desc,sf.original asc
+    </select>
+	<select id="selectNewSysFilesLabeledPage" resultMap="NewFileVOLabelResultMap">
+		SELECT
+		id AS file_id,
+		base_dataset_id,
+		file_name,
+		md5,
+		file_size,
+		create_time,
+		bucket_name,
+		original,
+		type
+		FROM sys_file
+		<where>
+			<!-- 确保主表记录存在子表数据 -->
+			AND EXISTS (
+			SELECT 1
+			FROM aircas_label
+			WHERE
+			file_id = sys_file.id
+			AND del_flag = '0'
+			<if test="query.labelState != null and query.labelState != ''">
+				AND state = #{query.labelState}
+			</if>
+			<if test="query.fileName != null and query.fileName != ''">
+				<bind name="fileNameLike" value="'%'+query.fileName+'%'"/>
+				AND file_name LIKE #{fileNameLike}
+			</if>
+			<if test="query.original != null and query.original != ''">
+				<bind name="originalLike" value="'%'+query.original+'%'"/>
+				AND original LIKE #{originalLike}
+			</if>
+			<if test="query.bucketName != null and query.bucketName != ''">
+				<bind name="bucketNameLike" value="'%'+query.bucketName+'%'"/>
+				AND bucket_name LIKE #{bucketNameLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.type != null and query.type != ''">
+				AND type = #{query.type}
+			</if>
+			<if test="query.taskId != null and query.taskId != ''">
+				AND task_id = #{query.taskId}
+			</if>
+			<if test="query.tagId != null and query.tagId != ''">
+				AND tag_id LIKE CONCAT('%', #{query.tagId}, '%')
+			</if>
+			<if test="query.description != null and query.description != ''">
+				AND description LIKE CONCAT('%', #{query.description}, '%')
+			</if>
+			)
+		</where>
+		ORDER BY id DESC, original ASC
+	</select>
+	<select id="selectNewSysFilesUnLabeledPage0512" resultMap="FileVOLabelResultMap0512">
+		SELECT sf.id AS file_id, sf.base_dataset_id, sf.file_name, sf.md5, sf.file_size, sf.create_time, sf.bucket_name,
+		sf.original,sf.width,sf.height
+		FROM sys_file sf
+		<where>
+			sf.del_flag = '0'
+			<if test="query.fileName != null and query.fileName != ''">
+				<bind name="fileNameLike" value="'%'+query.fileName+'%'"/>
+				AND sf.file_name LIKE #{fileNameLike}
+			</if>
+			<if test="query.original != null and query.original != ''">
+				<bind name="originalLike" value="'%'+query.original+'%'"/>
+				AND sf.original LIKE #{originalLike}
+			</if>
+			<if test="query.bucketName != null and query.bucketName != ''">
+				<bind name="bucketNameLike" value="'%'+query.bucketName+'%'"/>
+				AND sf.bucket_name LIKE #{bucketNameLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND sf.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.type != null and query.type != ''">
+				AND sf.type = #{query.type}
+			</if>
+			<if test="query.taskId != null and query.taskId != ''">
+				AND NOT EXISTS (
+				SELECT 1
+				FROM aircas_label al
+				WHERE al.file_id = sf.id
+				AND al.task_id = #{query.taskId}
+				AND al.del_flag = '0'
+				)
+			</if>
+		</where>
+		order by sf.id desc,sf.original asc
+	</select>
+	<select id="selectFileOrderIds" resultType="java.lang.Long">
+		select id
+		from sys_file
+		<where>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				and base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.fileName != null and query.fileName != ''">
+				and file_name like concat('%',#{query.fileName},'%')
+			</if>
+			<if test="query.original != null and query.original != ''">
+				and original like concat('%',#{query.original},'%')
+			</if>
+			<if test="query.bucketName != null and query.bucketName != ''">
+				and bucket_name like concat('%',#{query.bucketName},'%')
+			</if>
+			and del_flag ='0'
+		</where>
+		order by id desc
+	</select>
+	<select id="selectLabelByIds0512" resultMap="LabelVOResultMap">
+		select file_id,
+		label_id,
+		tag_id,
+		tag_info,
+		description,
+		task_id,
+		label_file_name from aircas_label
+		<where>
+			and file_id in
+			<foreach item="id" collection="list" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			and del_flag = '0'
+			<if test="query.taskId != null and query.taskId != ''">
+				and task_id = #{query.taskId}
+			</if>
+			<if test="query.tagId != null and query.tagId != ''">
+				and tag_id LIKE CONCAT('%', #{query.tagId}, '%')
+			</if>
+			<if test="query.description != null and query.description != ''">
+				and description LIKE CONCAT('%', #{query.description}, '%')
+			</if>
+		</where>
+	</select>
+	<select id="selectSysFilesLabeledIdsPage0721" resultMap="FileVOResultMap2">
+		select
+		sf.id as file_id
+		from sys_file sf left join aircas_label al on sf.id = al.file_id
+		<where>
+			sf.del_flag = '0' and al.del_flag = '0'
+			<if test="query.fileName != null and query.fileName != ''">
+				<bind name="fileNameLike" value="'%'+query.fileName+'%'"/>
+				AND sf.file_name LIKE #{fileNameLike}
+			</if>
+			<if test="query.original != null and query.original != ''">
+				<bind name="originalLike" value="'%'+query.original+'%'"/>
+				AND sf.original LIKE #{originalLike}
+			</if>
+			<if test="query.bucketName != null and query.bucketName != ''">
+				<bind name="bucketNameLike" value="'%'+query.bucketName+'%'"/>
+				AND sf.bucket_name LIKE #{bucketNameLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND sf.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.type != null and query.type != ''">
+				AND sf.type = #{query.type}
+			</if>
+			<if test="query.taskId != null and query.taskId != ''">
+				AND al.task_id = #{query.taskId}
+			</if>
+			<if test="query.tagId != null and query.tagId != ''">
+				AND al.tag_id like concat('%',#{query.tagId},'%')
+			</if>
+		</where>
+	</select>
+	<insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.train.platform.admin.api.entity.SysFile"
+			useGeneratedKeys="true">
+		insert into sys_file
+		( id, base_dataset_id, file_name
+		, bucket_name, original, type
+		, file_size, height, width, md5, create_by
+		, update_by, create_time, update_time
+		, del_flag)
+		values ( #{id,jdbcType=BIGINT}, #{baseDatasetId,jdbcType=BIGINT}, #{fileName,jdbcType=VARCHAR}
+			   , #{bucketName,jdbcType=VARCHAR}, #{original,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}
+			   , #{fileSize,jdbcType=BIGINT}, #{height,jdbcType=INTEGER}, #{width,jdbcType=INTEGER}
+			   , #{md5,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}
+			   , #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{delFlag,jdbcType=CHAR})
+	</insert>
+	<insert id="saveFile" parameterType="com.train.platform.admin.api.entity.SysFile" useGeneratedKeys="true"
+			keyProperty="id">
+		insert into sys_file
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="baseDatasetId!= null">base_dataset_id,</if>
+			<if test="fileName!= null">file_name,</if>
+			<if test="bucketName!= null">bucket_name,</if>
+			<if test="original!= null">original,</if>
+			<if test="type!= null">type,</if>
+			<if test="fileSize!= null">file_size,</if>
+			<if test="height!= null">height,</if>
+			<if test="width!= null">width,</if>
+			<if test="md5!= null">md5,</if>
+			<if test="createBy!= null">create_by,</if>
+			<if test="updateBy!= null">update_by,</if>
+			<if test="createTime!= null">create_time,</if>
+			<if test="updateTime!= null">update_time,</if>
+			<if test="delFlag!= null">del_flag,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="baseDatasetId!= null">#{baseDatasetId,jdbcType=BIGINT},</if>
+			<if test="fileName!= null">#{fileName,jdbcType=VARCHAR},</if>
+			<if test="bucketName!= null">#{bucketName,jdbcType=VARCHAR},</if>
+			<if test="original!= null">#{original,jdbcType=VARCHAR},</if>
+			<if test="type!= null">#{type,jdbcType=VARCHAR},</if>
+			<if test="fileSize!= null">#{fileSize,jdbcType=BIGINT},</if>
+			<if test="height!= null">#{height,jdbcType=INTEGER},</if>
+			<if test="width!= null">#{width,jdbcType=INTEGER},</if>
+			<if test="md5!= null">#{md5,jdbcType=VARCHAR},</if>
+			<if test="createBy!= null">#{createBy,jdbcType=VARCHAR},</if>
+			<if test="updateBy!= null">#{updateBy,jdbcType=VARCHAR},</if>
+			<if test="createTime!= null">#{createTime,jdbcType=TIMESTAMP},</if>
+			<if test="updateTime!= null">#{updateTime,jdbcType=TIMESTAMP},</if>
+			<if test="delFlag!= null">#{delFlag,jdbcType=CHAR},</if>
+		</trim>
+	</insert>
+</mapper>

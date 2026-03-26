@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizLabelTagMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.BizLabelTag">
+		<id property="tagId" column="tag_id" jdbcType="BIGINT"/>
+		<result property="groupId" column="group_id" jdbcType="BIGINT"/>
+		<result property="taskId" column="task_id" jdbcType="BIGINT"/>
+		<result property="tagName" column="tag_name" jdbcType="VARCHAR"/>
+		<result property="color" column="color" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		tag_id,group_id,task_id,tag_name,
+        color,create_time,create_by,update_time,update_by
+	</sql>
+    <update id="removeLabelTagByIds" parameterType="java.util.List">
+		update aircas_label_tag alt
+		set alt.del_flag = '1'
+		where alt.group_id is null and alt.tag_id in
+		<foreach collection="list" item="tagId" open="(" separator="," close=")">
+			#{tagId}
+		</foreach>
+	</update>
+    <select id="selectLabelTagByGroupId" resultMap="BaseResultMap"
+			parameterType="java.lang.Long">
+        select tag_id, group_id, tag_name, color
+        from aircas_label_tag
+        where del_flag = '0'
+          and group_id = #{groupId}
+    </select>
+	<select id="selectLabelTagPage" resultMap="BaseResultMap">
+		select alt.group_id,alt.task_id,alt.tag_id,alt.tag_name,alt.color,alt.create_time,alt.create_by,
+		       alt.update_time,alt.update_by
+		from aircas_label_tag alt
+		<where>
+		    alt.del_flag = '0'
+			<if test="query.tagId != null and query.tagId != ''">
+				and alt.tag_id = #{query.tagId}
+			</if>
+			<if test="query.groupId != null and query.groupId != ''">
+				and alt.group_id = #{query.groupId}
+			</if>
+			<if test="query.tagName != null and query.tagName != ''">
+				and alt.tag_name like concat ('%',#{query.tagName},'%')
+			</if>
+		</where>
+		order by alt.create_time desc
+	</select>
+	<select id="selectTagsInTagIds" resultMap="BaseResultMap">
+		select alt.group_id,alt.task_id,alt.tag_id,alt.tag_name,alt.color,alt.create_time,alt.create_by,
+		       alt.update_time,alt.update_by
+		from aircas_label_tag alt
+		where alt.del_flag = '0' and alt.tag_id in
+		<foreach collection="list" item="tagId" open="(" separator="," close=")">
+			#{tagId}
+		</foreach>
+	</select>
+</mapper>

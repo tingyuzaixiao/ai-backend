@@ -1,0 +1,3 @@
+com.train.platform.common.feign.PlatformFeignAutoConfiguration
+com.train.platform.common.feign.sentinel.SentinelAutoConfiguration
+com.train.platform.common.feign.sentinel.handle.GlobalBizExceptionHandler

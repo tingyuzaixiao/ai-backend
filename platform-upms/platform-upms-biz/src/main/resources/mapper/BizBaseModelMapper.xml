@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizBaseModelMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.BizBaseModel">
+		<id property="baseModelId" column="base_model_id" jdbcType="BIGINT"/>
+		<result property="baseModelName" column="base_model_name" jdbcType="VARCHAR"/>
+		<result property="baseModelType" column="base_model_type" jdbcType="VARCHAR"/>
+		<result property="dataType" column="data_type" jdbcType="VARCHAR"/>
+		<result property="resource" column="resource" jdbcType="VARCHAR"/>
+		<result property="catalogue" column="catalogue" jdbcType="VARCHAR"/>
+		<result property="config" column="config" jdbcType="VARCHAR"/>
+		<result property="trainConfig" column="train_config" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+		<result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<resultMap id="ModelGroupResult" type="com.train.platform.admin.api.vo.BaseModelVO">
+		<id property="baseModelId" column="base_model_id" jdbcType="BIGINT"/>
+		<result property="baseModelName" column="base_model_name" jdbcType="VARCHAR"/>
+		<result property="baseModelType" column="base_model_type" jdbcType="VARCHAR"/>
+		<result property="dataType" column="data_type" jdbcType="VARCHAR"/>
+		<collection property="modelList" ofType="com.train.platform.admin.api.vo.ModelVO"
+					select="com.train.platform.admin.mapper.BizModelMapper.listModelVOsByBaseModelId"
+					column="base_model_id">
+		</collection>
+	</resultMap>
+
+	<insert id="insertBizBaseModel">
+		INSERT INTO aircas_base_model
+		(base_model_name, base_model_type, data_type, resource, catalogue, config, train_config, description,
+		 create_time, update_time, create_by, update_by)
+		VALUES (#{baseModelName}, #{baseModelType}, #{dataType}, #{resource}, #{catalogue}, #{config}, #{trainConfig},
+				#{description}, #{createTime}, #{updateTime}, #{createBy}, #{updateBy})
+	</insert>
+
+	<select id="selectListGroup" resultMap="ModelGroupResult">
+		select abm.base_model_id,abm.base_model_name,abm.base_model_type,abm.data_type
+		from aircas_base_model abm
+		<where>
+			abm.del_flag = '0'
+			<if test="query.baseModelName != null and query.baseModelName != ''">
+				<bind name="baseModelNameLike" value="'%'+query.baseModelName+'%'"/>
+				AND abm.base_model_name LIKE #{baseModelNameLike}
+			</if>
+			<if test="query.baseModelId != null and query.baseModelId != ''">
+				AND abm.base_model_id = #{query.baseModelId}
+			</if>
+			<if test="query.baseModelType != null and query.baseModelType != ''">
+				AND abm.base_model_type = #{query.baseModelType}
+			</if>
+		</where>
+		<if test="_databaseId != 'mssql'">
+			ORDER BY abm.create_time DESC
+		</if>
+	</select>
+</mapper>

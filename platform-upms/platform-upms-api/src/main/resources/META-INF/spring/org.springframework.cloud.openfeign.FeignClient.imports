@@ -1,0 +1,6 @@
+com.train.platform.admin.api.feign.RemoteClientDetailsService
+com.train.platform.admin.api.feign.RemoteDictService
+com.train.platform.admin.api.feign.RemoteLogService
+com.train.platform.admin.api.feign.RemoteParamService
+com.train.platform.admin.api.feign.RemoteTokenService
+com.train.platform.admin.api.feign.RemoteUserService

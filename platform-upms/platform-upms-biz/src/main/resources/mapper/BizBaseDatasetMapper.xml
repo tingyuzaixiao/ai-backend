@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizBaseDatasetMapper">
+
+    <resultMap id="BaseResultMap" type="com.train.platform.admin.api.vo.BaseDatasetVO">
+            <id property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+            <result property="baseDatasetName" column="base_dataset_name" jdbcType="VARCHAR"/>
+            <result property="count" column="count" jdbcType="INTEGER"/>
+            <result property="dataType" column="data_type" jdbcType="CHAR"/>
+		    <result property="importType" column="import_type" jdbcType="CHAR"/>
+            <result property="state" column="state" jdbcType="VARCHAR"/>
+		    <result property="size" column="size" jdbcType="VARCHAR"/>
+            <result property="labelJson" column="label_json" jdbcType="VARCHAR"/>
+            <result property="labelType" column="label_type" jdbcType="CHAR"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+			<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+			<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+			<result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+			<result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+			<collection property="datasetList" ofType="com.train.platform.admin.api.vo.DatasetVO"
+						select="com.train.platform.admin.mapper.BizDatasetMapper.listBizDatasetsByBaseDatasetId" column="base_dataset_id">
+			</collection>
+    </resultMap>
+
+	<resultMap id="DatesetResultMap" type="com.train.platform.admin.api.vo.BaseDatasetVO">
+		<id property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetName" column="base_dataset_name" jdbcType="VARCHAR"/>
+		<result property="dataType" column="data_type" jdbcType="CHAR"/>
+		<result property="state" column="state" jdbcType="VARCHAR"/>
+		<collection property="datasetList" ofType="com.train.platform.admin.api.vo.DatasetVO"
+					select="com.train.platform.admin.mapper.BizDatasetMapper.listBizDatasetsByBaseDatasetId" column="base_dataset_id">
+		</collection>
+	</resultMap>
+
+    <sql id="Base_Column_List">
+        base_dataset_id,base_dataset_name,count,
+        data_type,import_type,state,size,label_json,
+        label_type,description,update_time,create_time,create_by,update_by
+    </sql>
+	<insert id="insertBizBaseDataset">
+		<selectKey keyProperty="baseDatasetId" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+			INSERT INTO aircas_base_dataset
+			(base_dataset_name,count,import_type,data_type,state,size,label_json,label_type,description,create_time,update_time,create_by,update_by)
+			VALUES
+			(#{baseDatasetName},#{count},#{importType},#{dataType},#{state},#{size},#{labelJson},#{labelType},#{description},#{createTime},#{updateTime},#{createBy},#{updateBy})
+	</insert>
+    <update id="updateState">
+        UPDATE aircas_base_dataset
+        SET state = #{state}, update_time = now()
+        WHERE base_dataset_id = #{baseDatasetId} and del_flag = '0'
+	</update>
+    <select id="getBaseDatasetVOsPage" resultMap="BaseResultMap">
+        SELECT
+        bd.base_dataset_id,bd.base_dataset_name,bd.count,
+        bd.data_type,bd.import_type,bd.state,format(bd.size/1000000,2) as size,bd.label_json,
+        bd.label_type,bd.description,bd.create_time,bd.update_time,bd.create_by,bd.update_by
+        FROM
+        aircas_base_dataset bd
+        <where>
+            bd.del_flag = '0'
+            <if test="query.baseDatasetName != null and query.baseDatasetName != ''">
+                <bind name="baseDatasetNameLike" value="'%'+query.baseDatasetName+'%'"/>
+                AND bd.base_dataset_name LIKE #{baseDatasetNameLike}
+            </if>
+            <if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+                AND bd.base_dataset_id = #{query.baseDatasetId}
+            </if>
+            <if test="query.dataType != null and query.dataType != ''">
+                AND bd.data_type = #{query.dataType}
+            </if>
+            <if test="query.labelType != null and query.labelType != ''">
+                AND bd.label_type = #{query.labelType}
+            </if>
+            <if test="query.state != null and query.state != ''">
+                AND bd.state = #{query.state}
+            </if>
+        </where>
+
+        <if test="_databaseId != 'mssql'">
+            ORDER BY bd.create_time DESC
+        </if>
+    </select>
+    <select id="selectListGroup" resultMap="DatesetResultMap">
+		SELECT
+		bd.base_dataset_id,bd.base_dataset_name,bd.data_type,bd.label_type
+		FROM
+		aircas_base_dataset bd
+		<where>
+			bd.del_flag = '0'
+			<if test="query.baseDatasetName != null and query.baseDatasetName != ''">
+				<bind name="baseDatasetNameLike" value="'%'+query.baseDatasetName+'%'"/>
+				AND bd.base_dataset_name LIKE #{baseDatasetNameLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND bd.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.dataType != null and query.dataType != ''">
+				AND bd.data_type = #{query.dataType}
+			</if>
+			<if test="query.labelType != null and query.labelType != ''">
+				AND bd.label_type = #{query.labelType}
+			</if>
+			<if test="query.state != null and query.state != ''">
+				AND bd.state = #{query.state}
+			</if>
+		</where>
+
+		<if test="_databaseId != 'mssql'">
+			ORDER BY bd.create_time DESC
+		</if>
+	</select>
+    <select id="selectImageIds" resultType="java.lang.Long" parameterType="java.lang.Long">
+		SELECT id
+		FROM sys_file
+		WHERE base_dataset_id = #{id}
+	</select>
+    <select id="getLabelListById" resultType="java.lang.String" parameterType="java.lang.Long">
+		select
+			abd.label_json
+		from
+			aircas_base_dataset abd
+		where abd.base_dataset_id = #{baseDatasetId}
+	</select>
+	<select id="getFilesByBaseDatasetId" resultType="java.lang.Long" parameterType="java.lang.Long">
+		SELECT
+			id
+		FROM
+			sys_file
+		WHERE
+			base_dataset_id = #{baseDatasetId}
+	</select>
+</mapper>

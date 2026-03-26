@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizLabelMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.vo.LabelVO">
+		<id property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<result property="taskId" column="task_id" jdbcType="VARCHAR"/>
+		<result property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="labelFileName" column="label_file_name" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="TIMESTAMP"/>
+		<!--		<collection property="tagInfoList" ofType="com.train.platform.admin.api.vo.LabelTagInfoVO"-->
+		<!--					select="com.train.platform.admin.mapper.BizLabelTagInfoMapper.selectByLabelId"-->
+		<!--					column="label_id">-->
+		<!--		</collection>-->
+	</resultMap>
+
+	<resultMap id="ClassResultMap" type="com.train.platform.admin.api.vo.LabelVO">
+		<id property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<result property="taskId" column="task_id" jdbcType="VARCHAR"/>
+		<result property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="labelFileName" column="label_file_name" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<resultMap id="LabelVOResultMap" type="com.train.platform.admin.api.vo.LabelVO">
+		<id property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<result property="taskId" column="task_id" jdbcType="VARCHAR"/>
+		<result property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="labelFileName" column="label_file_name" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="TIMESTAMP"/>
+		<collection property="tagInfoList" ofType="com.train.platform.admin.api.vo.LabelTagInfoVO"
+					select="com.train.platform.admin.mapper.BizLabelTagInfoMapper.selectByLabelId"
+					column="label_id">
+		</collection>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		label_id
+		,file_id,label_file_name,
+        tag_info
+	</sql>
+	<insert id="insertLabelVO">
+		insert into aircas_label
+		(label_id, task_id, file_id, label_file_name, tag_id, create_time, create_by)
+		values (#{labelId}, #{taskId}, #{fileId}, #{labelFileName},
+				#{tagId}, now(), #{createBy})
+	</insert>
+	<insert id="insertLabel" useGeneratedKeys="true" keyProperty="labelId">
+		insert into aircas_label
+		(task_id, file_id, label_file_name, tag_id, create_time, create_by)
+		values (#{taskId}, #{fileId}, #{labelFileName},
+				#{tagId}, now(), #{createBy})
+	</insert>
+    <update id="updateBizLabels"
+			parameterType="java.util.List">
+
+	</update>
+	<update id="updateLabelByLabelTag">
+		update aircas_label
+		<set>
+			<if test="tagInfo != null and tagInfo != ''">
+				tag_info = #{tagInfo},
+			</if>
+			update_time = now(),
+			update_by = #{updateBy}
+		</set>
+		where task_id = #{taskId} and tag_id = {tagId}
+	</update>
+	<update id="updateReferenceLabel" parameterType="com.train.platform.admin.api.entity.BizLabel">
+		update aircas_label
+		set reference_tag_id   = #{referenceTagId},
+			reference_tag_info = #{referenceTagInfo},
+			update_time        = now()
+		where file_id = #{fileId}
+		  and task_id = #{taskId}
+	</update>
+	<select id="selectLabelListByFileId" resultMap="BaseResultMap">
+        select
+        al.label_id,al.file_id,al.tag_id,al.task_id,al.label_file_name,al.description,al.create_time,al.create_by,al.update_time,al.update_by
+        from aircas_label al
+        where al.del_flag = '0'
+        and
+        al.file_id = #{fileId}
+        <if test="labelFileName != null and labelFileName != ''">
+            and al.label_file_name = #{labelFileName}
+        </if>
+        <if test="taskId != null and taskId != ''">
+            and al.task_id = #{taskId}
+        </if>
+        <if test="tagId != null and tagId != ''">
+            and al.tag_id like concat('%',#{tagId},'%')
+        </if>
+    </select>
+	<select id="selectLabelListByTaskId" resultMap="BaseResultMap"
+			parameterType="java.lang.Long">
+		select al.label_id, al.task_id, al.file_id, al.label_file_name, al.tag_id, al.description
+		from aircas_label al
+		where al.del_flag = '0'
+		  and task_id = #{taskId}
+	</select>
+	<select id="selectLabelPage" resultMap="BaseResultMap">
+		select al.label_id, al.task_id, al.file_id, al.label_file_name,al.tag_id, al.reference_tag_info,al.description,
+		al.create_time,al.create_by,al.update_time, al.update_by
+		from aircas_label al
+		<where>
+			al.del_flag = '0'
+			<if test="query.taskId != null and query.taskId != ''">
+				and al.task_id = #{query.taskId}
+			</if>
+			<if test="query.fileId != null and query.fileId != ''">
+				and al.file_id = #{query.fileId}
+			</if>
+			<if test="query.labelFileName != null and query.labelFileName != ''">
+				and al.label_file_name like concat ('%',#{query.labelFileName},'%')
+			</if>
+		</where>
+		order by al.create_time desc
+	</select>
+	<select id="selectLabelIdsByTaskIds" resultType="java.lang.Long"
+			parameterType="java.util.List">
+		select al.label_id
+		from aircas_label al
+		where al.del_flag = '0' and task_id in
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="getDetails" resultMap="LabelVOResultMap">
+		select
+		al.label_id,al.file_id,al.task_id,al.label_file_name,al.description,al.create_time,al.create_by,al.update_time,al.update_by
+		from aircas_label al
+		<where>
+			and al.del_flag = '0'
+			<if test="labelId!= null">
+				and al.label_id = #{labelId}
+			</if>
+			<if test="taskId!= null">
+				and al.task_id = #{taskId}
+			</if>
+			<if test="fileId!= null">
+				and al.file_id = #{fileId}
+			</if>
+		</where>
+
+	</select>
+</mapper>

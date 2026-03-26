@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.SysProgramMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.SysProgram">
+		<id column="id" property="id"/>
+		<result column="program_id" property="programId"/>
+		<result column="name" property="name"/>
+		<result column="labelType" property="label_type"/>
+		<result column="dataType" property="data_type"/>
+		<result column="description" property="description"/>
+		<result column="create_by" property="createBy"/>
+		<result column="update_by" property="updateBy"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="del_flag" property="delFlag"/>
+	</resultMap>
+
+	<!--通过角色查询项目信息-->
+	<select id="listProgramsByRoleId" resultMap="BaseResultMap">
+		SELECT sys_program.id,
+		       sys_program.program_id,
+			   sys_program.name,
+			   sys_program.label_type,
+			   sys_program.data_type,
+			   sys_program.description,
+			   sys_program.create_by,
+			   sys_program.update_by,
+			   sys_program.create_time,
+			   sys_program.update_time,
+		       sys_program.del_flag
+		FROM sys_program
+					 LEFT JOIN sys_role_program ON sys_program.id = sys_role_program.program_id
+		WHERE sys_program.del_flag = '0'
+		  AND sys_role_program.role_id = #{roleId}
+	</select>
+
+    <select id="getProgramVOsWithRolePage" resultMap="BaseResultMap">
+		SELECT distinct p.id,
+		       p.program_id,
+			   p.name,
+			   p.data_type,
+			   p.label_type,
+			   p.description,
+			   p.create_by,
+			   p.update_by,
+			   p.create_time,
+			   p.update_time,
+		       p.del_flag
+		FROM sys_program p
+					 LEFT JOIN sys_role_program rp ON p.id = rp.program_id
+		WHERE p.del_flag = '0'
+		    <if test="query.name != null and query.name != ''">
+				and p.name like concat('%', #{query.name}, '%')
+			</if>
+			<if test="query.programId != null and query.programId != ''">
+				and p.program_id = #{query.program_id}
+			</if>
+			<if test="query.labelType != null and query.labelType != ''">
+				and p.label_type = #{query.labelType}
+			</if>
+			<if test="query.dataType != null and query.dataType != ''">
+				and p.data_type = #{query.dataType}
+			</if>
+			and rp.role_id in
+			<foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+				#{roleId}
+			</foreach>
+	</select>
+
+	<select id="selectProgramVOById" resultMap="BaseResultMap">
+		SELECT id,
+		       program_id,
+			   name,
+			   label_type,
+			   data_type,
+			   description,
+			   create_by,
+			   update_by,
+			   create_time,
+			   update_time,
+		       del_flag
+		FROM sys_program
+		WHERE id = #{id} and del_flag = '0'
+	</select>
+
+	<select id="hasRepeatName" resultType="java.lang.Boolean">
+		SELECT EXISTS (SELECT 1 FROM sys_program
+		WHERE name = #{name}
+		)
+	</select>
+
+	<update id="logicDelete">
+		UPDATE sys_program
+		SET del_flag = '1', update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,8 @@
+com.train.platform.common.core.config.TaskExecutorConfiguration
+com.train.platform.common.core.config.JacksonConfiguration
+com.train.platform.common.core.config.RedisTemplateConfiguration
+com.train.platform.common.core.config.RestTemplateConfiguration
+com.train.platform.common.core.util.SpringContextHolder
+com.train.platform.common.core.config.WebMvcConfiguration
+com.train.platform.common.core.config.MlflowAutoConfiguration
+com.train.platform.common.core.config.ProgramLockConfiguration

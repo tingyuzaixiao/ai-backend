@@ -1,0 +1,7 @@
+# swagger 配置
+swagger:
+  enabled: true
+  title: AI Train Platform Swagger API
+  gateway: http://swagger.aircas.icu:81
+  token-url: ${swagger.gateway}/auth/oauth2/token
+  scope: server

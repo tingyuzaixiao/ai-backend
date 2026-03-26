@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizModelMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.vo.ModelVO">
+		<id property="modelId" column="model_id" jdbcType="BIGINT"/>
+		<result property="baseModelId" column="base_model_id" jdbcType="BIGINT"/>
+		<result property="baseModelName" column="base_model_name" jdbcType="VARCHAR"/>
+		<result property="modelName" column="model_name" jdbcType="VARCHAR"/>
+		<result property="pretrainCheckpoint" column="pretrain_checkpoint" jdbcType="VARCHAR"/>
+		<result property="version" column="version" jdbcType="VARCHAR"/>
+		<result property="modelType" column="model_type" jdbcType="VARCHAR"/>
+		<result property="dataType" column="data_type" jdbcType="VARCHAR"/>
+		<result property="resource" column="resource" jdbcType="VARCHAR"/>
+		<result property="domain" column="domain" jdbcType="VARCHAR"/>
+		<result property="supportOptions" column="support_options" jdbcType="VARCHAR"/>
+		<result property="license" column="license" jdbcType="VARCHAR"/>
+		<result property="downloadSource" column="download_source" jdbcType="VARCHAR"/>
+		<result property="catalogue" column="catalogue" jdbcType="VARCHAR"/>
+		<result property="environment" column="environment" jdbcType="VARCHAR"/>
+		<result property="config" column="config" jdbcType="VARCHAR"/>
+		<result property="trainConfig" column="train_config" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		model_id,base_model_id,model_name,
+        pretrain_checkpoint,version,model_type,data_type,
+        resource,domain,support_options,license,
+        download_source,catalogue,environment,
+        config,train_config,description,
+        create_by,update_by,create_time,
+        update_time
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List"/>
+		from aircas_model
+		where model_id = #{modelId,jdbcType=BIGINT}
+	</select>
+	<select id="getModelInfoById" resultMap="BaseResultMap">
+		select am.model_id,
+			   am.base_model_id,
+			   abm.base_model_name,
+			   am.model_name,
+			   am.pretrain_checkpoint,
+			   am.version,
+			   am.model_type,
+			   am.data_type,
+			   am.resource,
+			   am.domain,
+			   am.support_options,
+			   am.license,
+			   am.download_source,
+			   am.catalogue,
+			   am.environment,
+			   am.config,
+			   am.train_config,
+			   am.description,
+			   am.create_by,
+			   am.update_by,
+			   am.create_time,
+			   am.update_time
+		from aircas_model am
+				 left join aircas_base_model abm on am.base_model_id = abm.base_model_id
+		where am.model_id = #{id}
+	</select>
+
+	<select id="listModelVOsByBaseModelId" resultMap="BaseResultMap"
+			parameterType="java.lang.Long">
+		select am.model_id, am.base_model_id, am.model_name, am.pretrain_checkpoint, am.version, am.model_type,am.data_type
+		from aircas_model am
+		where am.base_model_id = #{baseModelId}
+		  and am.del_flag = '0'
+	</select>
+	<select id="selectModelIdsByBaseModelId" resultType="java.lang.Long">
+		select model_id
+		from aircas_model
+		where base_model_id = #{baseModelId}
+	</select>
+    <select id="getModelPage" resultMap="BaseResultMap">
+        select am.model_id,
+        am.model_id,
+        am.base_model_id,
+        abm.base_model_name,
+        am.model_name,
+        am.pretrain_checkpoint,
+        am.version,
+        am.model_type,
+        am.data_type,
+        am.resource,
+        am.domain,
+        am.support_options,
+        am.license,
+        am.download_source,
+        am.catalogue,
+        am.environment,
+        am.config,
+        am.train_config,
+        am.description,
+        am.create_by,
+        am.update_by,
+        am.create_time,
+        am.update_time,abm.base_model_name
+        from aircas_model am left join aircas_base_model abm on am.base_model_id = abm.base_model_id
+        <where>
+            am.del_flag = '0'
+            <if test="query.modelName != null and query.modelName != ''">
+                <bind name="modelNameLike" value="'%'+query.modelName+'%'"/>
+                AND am.model_name LIKE #{modelNameLike}
+            </if>
+            <if test="query.modelId != null and query.modelId != ''">
+                AND am.model_id = #{query.model_id}
+            </if>
+            <if test="query.modelType != null and query.modelType != ''">
+                AND bd.model_type = #{query.modelType}
+            </if>
+            <if test="query.baseModelId != null and query.baseModelId != ''">
+                AND bd.base_model_id = #{query.baseModelId}
+            </if>
+        </where>
+        <if test="_databaseId != 'mssql'">
+            ORDER BY am.create_time DESC,am.update_time DESC
+        </if>
+    </select>
+    <select id="getModelVOList" resultMap="BaseResultMap"
+            parameterType="java.util.List">
+		select am.model_id,am.base_model_id,am.model_name,abm.base_model_name
+		from aircas_model am left join aircas_base_model abm on am.base_model_id = abm.base_model_id
+		where am.model_id in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete
+		from aircas_model
+		where model_id = #{modelId,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" keyColumn="model_id" keyProperty="modelId"
+			parameterType="com.train.platform.admin.api.entity.BizModel" useGeneratedKeys="true">
+		insert into aircas_model
+		( model_id, base_model_id, model_name
+		, pretrain_checkpoint, version, model_type,data_type
+		, resource, domain, support_options, license
+		, download_source, catalogue, environment
+		, config, train_config, description
+		, create_by, update_by, create_time
+		, update_time, del_flag)
+		values ( #{modelId,jdbcType=BIGINT}, #{baseModelId,jdbcType=BIGINT}, #{modelName,jdbcType=VARCHAR}
+			   , #{pretrainCheckpoint,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, #{modelType,jdbcType=VARCHAR},#{dataType,jdbcType=VARCHAR}
+			   , #{resource,jdbcType=VARCHAR}, #{domain,jdbcType=VARCHAR}, #{supportOptions,jdbcType=VARCHAR}
+			   , #{license,jdbcType=VARCHAR}
+			   , #{downloadSource,jdbcType=VARCHAR}, #{catalogue,jdbcType=VARCHAR}, #{environment,jdbcType=VARCHAR}
+			   , #{config,jdbcType=VARCHAR}, #{trainConfig,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}
+			   , #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+			   , #{updateTime,jdbcType=TIMESTAMP}, #{delFlag,jdbcType=CHAR})
+	</insert>
+	<insert id="insertSelective" keyColumn="model_id" keyProperty="modelId"
+			parameterType="com.train.platform.admin.api.entity.BizModel" useGeneratedKeys="true">
+		insert into aircas_model
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="modelId != null">model_id,</if>
+			<if test="baseModelId != null">base_model_id,</if>
+			<if test="modelName != null">model_name,</if>
+			<if test="pretrainCheckpoint != null">pretrain_checkpoint,</if>
+			<if test="version != null">version,</if>
+			<if test="modelType != null">model_type,</if>
+			<if test="dataType != null">data_type,</if>
+			<if test="resource != null">resource,</if>
+			<if test="domain != null">domain,</if>
+			<if test="supportOptions != null">support_options,</if>
+			<if test="license != null">license,</if>
+			<if test="downloadSource != null">download_source,</if>
+			<if test="catalogue != null">catalogue,</if>
+			<if test="environment != null">environment,</if>
+			<if test="config != null">config,</if>
+			<if test="trainConfig != null">train_config,</if>
+			<if test="description != null">description,</if>
+			<if test="createBy != null">create_by,</if>
+			<if test="updateBy != null">update_by,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="updateTime != null">update_time,</if>
+			<if test="delFlag != null">del_flag,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="modelId != null">#{modelId,jdbcType=BIGINT},</if>
+			<if test="baseModelId != null">#{baseModelId,jdbcType=BIGINT},</if>
+			<if test="modelName != null">#{modelName,jdbcType=VARCHAR},</if>
+			<if test="pretrainCheckpoint != null">#{pretrainCheckpoint,jdbcType=VARCHAR},</if>
+			<if test="version != null">#{version,jdbcType=VARCHAR},</if>
+			<if test="modelType != null">#{modelType,jdbcType=VARCHAR},</if>
+			<if test="dataType != null">#{dataType,jdbcType=VARCHAR},</if>
+			<if test="resource != null">#{resource,jdbcType=VARCHAR},</if>
+			<if test="domain != null">#{domain,jdbcType=VARCHAR},</if>
+			<if test="supportOptions != null">#{supportOptions,jdbcType=VARCHAR},</if>
+			<if test="license != null">#{license,jdbcType=VARCHAR},</if>
+			<if test="downloadSource != null">#{downloadSource,jdbcType=VARCHAR},</if>
+			<if test="catalogue != null">#{catalogue,jdbcType=VARCHAR},</if>
+			<if test="environment != null">#{environment,jdbcType=VARCHAR},</if>
+			<if test="config != null">#{config,jdbcType=VARCHAR},</if>
+			<if test="trainConfig != null">#{trainConfig,jdbcType=VARCHAR},</if>
+			<if test="description != null">#{description,jdbcType=VARCHAR},</if>
+			<if test="createBy != null">#{createBy,jdbcType=VARCHAR},</if>
+			<if test="updateBy != null">#{updateBy,jdbcType=VARCHAR},</if>
+			<if test="createTime != null">#{createTime,jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP},</if>
+			<if test="delFlag != null">#{delFlag,jdbcType=CHAR},</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.train.platform.admin.api.entity.BizModel">
+		update aircas_model
+		<set>
+			<if test="baseModelId != null">
+				base_model_id = #{baseModelId,jdbcType=BIGINT},
+			</if>
+			<if test="modelName != null">
+				model_name = #{modelName,jdbcType=VARCHAR},
+			</if>
+			<if test="pretrainCheckpoint != null">
+				pretrain_checkpoint = #{pretrainCheckpoint,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				version = #{version,jdbcType=VARCHAR},
+			</if>
+			<if test="modelType != null">
+				model_type = #{modelType,jdbcType=VARCHAR},
+			</if>
+			<if test="dataType != null">
+				data_type = #{dataType,jdbcType=VARCHAR},
+			</if>
+			<if test="resource != null">
+				resource = #{resource,jdbcType=VARCHAR},
+			</if>
+			<if test="domain != null">
+				domain = #{domain,jdbcType=VARCHAR},
+			</if>
+			<if test="supportOptions != null">
+				support_options = #{supportOptions,jdbcType=VARCHAR},
+			</if>
+			<if test="license != null">
+				license = #{license,jdbcType=VARCHAR},
+			</if>
+			<if test="downloadSource != null">
+				download_source = #{downloadSource,jdbcType=VARCHAR},
+			</if>
+			<if test="catalogue != null">
+				catalogue = #{catalogue,jdbcType=VARCHAR},
+			</if>
+			<if test="environment != null">
+				environment = #{environment,jdbcType=VARCHAR},
+			</if>
+			<if test="config != null">
+				config = #{config,jdbcType=VARCHAR},
+			</if>
+			<if test="trainConfig != null">
+				train_config = #{trainConfig,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="createBy != null">
+				create_by = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateBy != null">
+				update_by = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="delFlag != null">
+				del_flag = #{delFlag,jdbcType=CHAR},
+			</if>
+		</set>
+		where model_id = #{modelId,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.train.platform.admin.api.entity.BizModel">
+		update aircas_model
+		set base_model_id       = #{baseModelId,jdbcType=BIGINT},
+			model_name          = #{modelName,jdbcType=VARCHAR},
+			pretrain_checkpoint = #{pretrainCheckpoint,jdbcType=VARCHAR},
+			version             = #{version,jdbcType=VARCHAR},
+			model_type          = #{modelType,jdbcType=VARCHAR},
+			data_type           = #{dataType,jdbcType=VARCHAR},
+			resource            = #{resource,jdbcType=VARCHAR},
+			domain              = #{domain,jdbcType=VARCHAR},
+			support_options     = #{supportOptions,jdbcType=VARCHAR},
+			license             = #{license,jdbcType=VARCHAR},
+			download_source     = #{downloadSource,jdbcType=VARCHAR},
+			catalogue           = #{catalogue,jdbcType=VARCHAR},
+			environment         = #{environment,jdbcType=VARCHAR},
+			config              = #{config,jdbcType=VARCHAR},
+			train_config        = #{trainConfig,jdbcType=VARCHAR},
+			description         = #{description,jdbcType=VARCHAR},
+			create_by           = #{createBy,jdbcType=VARCHAR},
+			update_by           = #{updateBy,jdbcType=VARCHAR},
+			create_time         = #{createTime,jdbcType=TIMESTAMP},
+			update_time         = #{updateTime,jdbcType=TIMESTAMP},
+			del_flag            = #{delFlag,jdbcType=CHAR}
+		where model_id = #{modelId,jdbcType=BIGINT}
+	</update>
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizGpuResourceMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.BizGpuResource">
+		<id property="id" column="id" jdbcType="BIGINT"/>
+		<result property="gpuUuid" column="gpu_uuid" jdbcType="VARCHAR"/>
+		<result property="gpuId" column="gpu_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+		<result property="gpuName" column="gpu_name" jdbcType="VARCHAR"/>
+		<result property="gpuMemory" column="gpu_memory" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+		<result property="ip" column="ip" jdbcType="VARCHAR"/>
+		<result property="state" column="state" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result property="programName" column="program_name" jdbcType="VARCHAR"/>
+		<result property="experimentName" column="experiment_name" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="columns">
+		id,
+		gpu_uuid,
+		gpu_id,
+		gpu_name,
+		gpu_memory,
+		ip,
+		state,
+		create_time,
+		update_time,
+		program_name,
+		experiment_name
+	</sql>
+
+	<select id="getBizGpuResources" resultMap="BaseResultMap">
+		SELECT <include refid="columns" />
+		FROM aircas_gpu_resource
+		<where>
+			del_flag = '0'
+			<if test="query.id != null">
+				AND id = #{query.id}
+			</if>
+			<if test="query.gpuUuid != null and query.gpuUuid.trim() != ''">
+				AND gpu_uuid = #{query.gpuUuid}
+			</if>
+			<if test="query.gpuName != null and query.gpuName.trim() != ''">
+				AND gpu_name = #{query.gpuName}
+			</if>
+			<if test="query.ip != null and query.ip.trim() != ''">
+				AND ip = #{query.ip}
+			</if>
+			<if test="query.state != null and query.state.trim() != ''">
+				AND state = #{query.state}
+			</if>
+			<if test="query.programName != null and query.programName.trim() != ''">
+				AND program_name = #{query.programName}
+			</if>
+			<if test="query.experimentName != null and query.experimentName.trim() != ''">
+				AND experiment_name = #{query.experimentName}
+			</if>
+		</where>
+	</select>
+
+    <update id="updateGpuState" parameterType="com.train.platform.admin.api.entity.BizGpuResource">
+		update aircas_gpu_resource
+		<trim prefix="set" suffixOverrides=",">
+			<if test="state != null">
+				state = #{state},
+			</if>
+			<if test="programName != null and programName.trim() != ''">
+				program_name = #{programName},
+			</if>
+			<if test="experimentName != null and experimentName.trim() != ''">
+				experiment_name = #{experimentName},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime},
+			</if>
+			<if test="delFlag != null">
+				del_flag = #{delFlag},
+			</if>
+		</trim>
+		<where>
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+			<if test="gpuUuid != null">
+				and gpu_uuid = #{gpuUuid}
+			</if>
+		</where>
+	</update>
+</mapper>

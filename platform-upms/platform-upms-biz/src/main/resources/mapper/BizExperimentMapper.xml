@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizExperimentMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.entity.BizExperiment">
+		<id property="id" column="id" jdbcType="BIGINT"/>
+		<result property="experimentId" column="experiment_id" jdbcType="VARCHAR"/>
+		<result property="experimentName" column="experiment_name" jdbcType="VARCHAR"/>
+		<result property="programId" column="program_id" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="algorithm" column="algorithm" jdbcType="VARCHAR"/>
+		<result property="pyRequirements" column="py_requirements" jdbcType="VARCHAR"/>
+		<result property="modelFile" column="model_file" jdbcType="VARCHAR"/>
+		<result property="weightsFile" column="weights_file" jdbcType="VARCHAR"/>
+		<result property="refWeights" column="ref_weights" jdbcType="VARCHAR"/>
+		<result property="datasetId" column="dataset_id" jdbcType="BIGINT"/>
+		<result property="taskId" column="task_id" jdbcType="BIGINT"/>
+		<result property="hyperParameters" column="hyper_parameters" jdbcType="VARCHAR"/>
+		<result property="augmentationParams" column="augmentation_params" jdbcType="VARCHAR"/>
+		<result property="metrics" column="metrics" jdbcType="VARCHAR"/>
+		<result property="status" column="status" jdbcType="VARCHAR"/>
+		<result property="stopType" column="stop_type" jdbcType="TINYINT" javaType="java.lang.Integer"/>
+		<result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
+		<result property="duration" column="duration" jdbcType="BIGINT"/>
+		<result property="outputModel" column="output_model" jdbcType="VARCHAR"/>
+		<result property="mlflowDel" column="mlflow_del" jdbcType="TINYINT" javaType="java.lang.Integer"/>
+		<result property="progress" column="progress" jdbcType="FLOAT"/>
+		<result property="resourceId" column="resource_id" jdbcType="BIGINT"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="delFlag" column="del_flag" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="columns">
+		id,
+		experiment_id,
+		experiment_name,
+		program_id,
+		description,
+		algorithm,
+		py_requirements,
+		model_file,
+		weights_file,
+		ref_weights,
+		dataset_id,
+		task_id,
+		hyper_parameters,
+		augmentation_params,
+		metrics,
+		status,
+		stop_type,
+		start_time,
+		duration,
+		output_model,
+		mlflow_del,
+		progress,
+		resource_id,
+		create_by,
+		update_by,
+		create_time,
+		update_time,
+		del_flag
+	</sql>
+
+	<select id="getExperiments" resultMap="BaseResultMap">
+		SELECT <include refid="columns" />
+		FROM aircas_experiment
+		<where>
+			<if test="query.id != null">
+				AND id = #{query.id}
+			</if>
+			<if test="query.experimentId != null and query.experimentId.trim() != ''">
+				AND experiment_id = #{query.experimentId}
+			</if>
+			<if test="query.experimentName != null and query.experimentName.trim() != ''">
+				AND experiment_name = #{query.experimentName}
+			</if>
+			<if test="query.programId != null and query.programId.trim() != ''">
+				AND program_id = #{query.programId}
+			</if>
+			<if test="query.status != null and query.status.trim() != ''">
+				AND status = #{query.status}
+			</if>
+			<if test="query.delFlag != null and query.delFlag.trim() != ''">
+				AND del_flag = #{query.delFlag}
+			</if>
+		</where>
+	</select>
+
+	<select id="hasRepeatName" resultType="java.lang.Boolean">
+		SELECT EXISTS (SELECT 1 FROM aircas_experiment
+		WHERE experiment_name = #{name} AND program_id = #{programId}
+		)
+	</select>
+
+	<select id="hasExperiments" resultType="java.lang.Boolean">
+		SELECT EXISTS (SELECT 1 FROM aircas_experiment
+		<where>
+			del_flag = '0'
+			<if test="modelFile != null and modelFile.trim() != ''">
+				AND model_file = #{modelFile}
+			</if>
+			<if test="weightsFile != null and weightsFile.trim() != ''">
+				AND weights_file = #{weightsFile}
+			</if>
+		</where> )
+	</select>
+
+	<select id="getDelMaxUpdateTime" resultType="java.time.LocalDateTime">
+		SELECT MAX(update_time) FROM aircas_experiment
+		<where>
+			update_time IS NOT NULL AND
+			del_flag = '1'
+			<if test="modelFile != null and modelFile.trim() != ''">
+				AND model_file = #{modelFile}
+			</if>
+			<if test="weightsFile != null and weightsFile.trim() != ''">
+				AND weights_file = #{weightsFile}
+			</if>
+		</where>
+	</select>
+
+	<select id="getExperimentsToDelete" resultMap="BaseResultMap">
+		SELECT <include refid="columns" />
+		FROM aircas_experiment
+		WHERE mlflow_del = 0 AND del_flag = '1'
+	</select>
+
+	<select id="getExperimentIdsByProgramId">
+		SELECT experiment_id FROM aircas_experiment
+		WHERE program_id = #{programId} AND del_flag = '0'
+	</select>
+
+	<select id="getExperimentsByIds" resultMap="BaseResultMap">
+		SELECT <include refid="columns" />
+		FROM aircas_experiment
+		<where>
+			del_flag = '0'
+			<if test="ids != null and ids.size() > 0">
+				AND id IN
+				<foreach collection="ids" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="statuses != null">
+				AND status IN
+				<foreach collection="statuses" item="status" open="(" separator="," close=")">
+					#{status}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<update id="updateStatus">
+		UPDATE aircas_experiment A LEFT JOIN sys_program B ON A.program_id = B.program_id
+		SET A.status = #{dstStatus}, A.update_time = #{updateTime}
+		WHERE A.id = #{id} AND A.status = #{srcStatus} AND A.del_flag = '0' AND B.del_flag = '0'
+	</update>
+
+	<update id="updateToRunning">
+		UPDATE aircas_experiment A LEFT JOIN sys_program B ON A.program_id = B.program_id
+		SET A.status = #{dstStatus}, A.resource_id = #{resourceId}, A.update_time = #{updateTime}
+		WHERE A.id = #{id} AND A.status = #{srcStatus} AND A.del_flag = '0' AND B.del_flag = '0'
+	</update>
+
+	<update id="updateToKilling">
+		UPDATE aircas_experiment A LEFT JOIN sys_program B ON A.program_id = B.program_id
+		SET A.status = #{dstStatus}, A.stop_type = #{stopType}, A.update_time = #{updateTime}
+		WHERE A.id = #{id} AND A.status = #{srcStatus} AND A.del_flag = '0' AND B.del_flag = '0'
+	</update>
+
+	<update id="updateToKilled">
+		UPDATE aircas_experiment A LEFT JOIN sys_program B ON A.program_id = B.program_id
+		SET A.status = #{dstStatus}, A.update_time = #{updateTime}
+		WHERE A.id = #{id} AND A.status = #{srcStatus} AND A.del_flag = '0' AND B.del_flag = '0'
+	</update>
+
+	<update id="logicDeleteByProgramId">
+		UPDATE aircas_experiment
+		SET del_flag = '1', mlflow_del = '0', update_time = #{updateTime}
+		WHERE program_id = #{programId} AND del_flag = '0'
+	</update>
+
+	<update id="logicDeleteByIds">
+		UPDATE aircas_experiment
+		SET del_flag = '1', update_time = #{updateTime}
+		WHERE del_flag = '0' AND id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<update id="deleteMlflow">
+		UPDATE aircas_experiment
+		SET mlflow_del = #{mlflowDel}, update_time = #{updateTime}
+		WHERE id = #{id} AND del_flag = '1'
+	</update>
+</mapper>

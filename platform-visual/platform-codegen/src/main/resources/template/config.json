@@ -1,0 +1,12 @@
+{
+  "project": {
+    "packageName": "com.train.platform",
+    "version": "1.0.0",
+    "backendPath": "platform",
+    "frontendPath": "platform-ui"
+  },
+  "developer": {
+    "author": "pig",
+    "email": "pig4cloud@qq.com"
+  }
+}

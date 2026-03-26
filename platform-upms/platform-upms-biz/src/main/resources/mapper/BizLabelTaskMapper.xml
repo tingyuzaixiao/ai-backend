@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizLabelTaskMapper">
+
+	<resultMap id="BaseResultMap" type="com.train.platform.admin.api.vo.LabelTaskVO">
+		<id property="taskId" column="task_id" jdbcType="BIGINT"/>
+		<result property="taskName" column="task_name" jdbcType="VARCHAR"/>
+		<result property="datasetId" column="dataset_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="labelType" column="label_type" jdbcType="CHAR"/>
+		<result property="dataType" column="data_type" jdbcType="CHAR"/>
+		<result property="tagIds" column="tag_ids" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="intelligentAnnotationUrl" column="intelligent_annotation_url" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="TIMESTAMP"/>
+		<!--		<collection property="labelList" ofType="com.train.platform.admin.api.vo.LabelVO"-->
+		<!--					select="com.train.platform.admin.mapper.BizLabelMapper.selectLabelListByTaskId" column="task_id">-->
+		<!--		</collection>-->
+	</resultMap>
+
+	<resultMap id="LabelFileResultMap" type="com.train.platform.admin.api.vo.LabelFileVO">
+		<id property="labelId" column="label_id" jdbcType="BIGINT"/>
+		<result property="fileId" column="file_id" jdbcType="BIGINT"/>
+		<result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+		<result property="fileSize" column="file_size" jdbcType="BIGINT"/>
+		<result property="md5" column="md5" jdbcType="VARCHAR"/>
+		<result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
+		<result property="original" column="original" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+		<result property="tagId" column="tag_id" jdbcType="VARCHAR"/>
+		<result property="tagInfo" column="tag_info" jdbcType="VARCHAR"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<resultMap id="DatasetResultMap" type="com.train.platform.admin.api.vo.BaseDatasetVO">
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetName" column="base_dataset_name" jdbcType="VARCHAR"/>
+		<result property="labelType" column="label_type" jdbcType="CHAR"/>
+		<result property="dataType" column="data_type" jdbcType="CHAR"/>
+		<result property="count" column="count" jdbcType="INTEGER"/>
+		<!--		<collection property="labelTaskList" ofType="com.train.platform.admin.api.vo.LabelTaskVO"-->
+		<!--					select="com.train.platform.admin.mapper.BizLabelTaskMapper.listAllByBaseDatasetId" column="base_dataset_id">-->
+		<!--		</collection>-->
+	</resultMap>
+
+	<resultMap id="TaskResultMap" type="com.train.platform.admin.api.vo.LabelTaskListVO">
+		<id property="taskId" column="task_id" jdbcType="BIGINT"/>
+		<result property="taskName" column="task_name" jdbcType="VARCHAR"/>
+		<result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		<result property="baseDatasetName" column="base_dataset_name" jdbcType="VARCHAR"/>
+		<result property="labelType" column="label_type" jdbcType="CHAR"/>
+		<result property="subLabelType" column="sub_label_type" jdbcType="CHAR"/>
+		<result property="dataType" column="data_type" jdbcType="CHAR"/>
+		<result property="tagIds" column="tag_ids" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="intelligentAnnotationUrl" column="intelligent_annotation_url" jdbcType="VARCHAR"/>
+		<result property="imageCount" column="image_count" jdbcType="INTEGER"/>
+		<result property="labelCount" column="label_count" jdbcType="INTEGER"/>
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+		<result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+		<result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+		<result property="updateBy" column="update_by" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		task_id
+		,task_name,dataset_id,base_dataset_id,
+		label_type,data_type,tag_ids,del_flag,create_time,
+		create_by,update_time,update_by
+	</sql>
+	<select id="selectLabelTaskById" resultMap="BaseResultMap"
+			parameterType="java.lang.Long">
+		select alt.task_id,
+			   alt.task_name,
+			   alt.dataset_id,
+			   alt.base_dataset_id,
+			   alt.label_type,
+			   alt.sub_label_type,
+			   alt.data_type,
+			   alt.tag_ids,
+			   alt.description,
+			   alt.create_time,
+			   alt.create_by,
+			   alt.update_time,
+			   alt.update_by,
+			   alt.intelligent_annotation_url,
+			   alt.description
+		from aircas_label_task alt
+		where alt.del_flag = '0'
+		  and task_id = #{taskId}
+	</select>
+	<select id="getLabelTaskByPage" resultMap="TaskResultMap">
+		select alt.task_id, alt.task_name, alt.base_dataset_id,
+		abd.base_dataset_name,alt.intelligent_annotation_url,alt.description,
+		alt.label_type,alt.sub_label_type,alt.data_type,alt.tag_ids,abd.count as image_count,alt.create_time,
+		alt.create_by, alt.update_time,
+		alt.update_by,count(case when al.del_flag ='0' then 1 end) as label_count
+		from aircas_label_task alt
+		left join aircas_base_dataset abd on alt.base_dataset_id = abd.base_dataset_id
+		left join aircas_label al on al.task_id = alt.task_id
+		<where>
+			alt.del_flag = '0'
+			<if test="query.taskId != null and query.taskId != ''">
+				and alt.task_id = #{query.taskId}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				and alt.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.taskName != null and query.taskName != ''">
+				and alt.task_name like concat('%',#{query.taskName},'%')
+			</if>
+			<if test="query.labelType != null and query.labelType != ''">
+				and alt.label_type = #{query.labelType}
+			</if>
+
+		</where>
+		group by alt.task_id
+		order by max(alt.create_time) desc
+
+	</select>
+	<select id="selectExportLabelTask" resultMap="LabelFileResultMap">
+		select al.label_id,
+			   sf.id as file_id,
+			   sf.bucket_name,
+			   sf.original,
+			   sf.type,
+			   sf.md5,
+			   sf.file_size,
+			   sf.height,
+			   sf.width,
+			   al.tag_id,
+			   al.create_time,
+			   al.create_by,
+			   al.update_time,
+			   al.update_by,
+			   sf.file_name,
+			   al.update_time,
+			   al.update_by
+		from sys_file sf
+				 left join aircas_label al on al.file_id = sf.id and al.del_flag = '0' and al.task_id = #{taskId}
+		where sf.del_flag = '0'
+		  and sf.base_dataset_id = #{baseDatasetId}
+	</select>
+	<select id="selectDetectSegExportLabelTask" resultMap="LabelFileResultMap">
+		select al.label_id,
+			   al.file_id,
+			   sf.bucket_name,
+			   sf.original,
+			   sf.type,
+			   sf.md5,
+			   sf.file_size,
+			   al.create_time,
+			   al.create_by,
+			   al.update_time,
+			   al.update_by,
+			   sf.file_name
+		from aircas_label al
+				 left join sys_file sf on al.file_id = sf.id
+		where al.del_flag = '0'
+		  and al.task_id = #{taskId}
+		  and sf.del_flag = '0'
+		  and sf.base_dataset_id = #{baseDatasetId}
+	</select>
+	<select id="selectLabelTaskByBaseDatasetId" resultMap="TaskResultMap" parameterType="java.lang.Long">
+		select alt.task_id,
+			   alt.task_name,
+			   alt.dataset_id,
+			   alt.base_dataset_id,
+			   alt.label_type,
+			   alt.data_type,
+			   alt.sub_label_type,
+			   alt.tag_ids,
+			   alt.create_time,
+			   alt.create_by,
+			   alt.update_time,
+			   alt.update_by,
+			   alt.intelligent_annotation_url,
+			   alt.description
+		from aircas_label_task alt
+		where alt.del_flag = '0'
+		  and alt.base_dataset_id = #{baseDatasetId}
+	</select>
+	<select id="getLabelTaskByPageNew" resultMap="DatasetResultMap">
+		select abd.base_dataset_id,abd.base_dataset_name,abd.data_type,abd.label_type,abd.count
+		from aircas_base_dataset abd
+		where abd.del_flag = '0'
+		<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+			and abd.base_dataset_id = #{query.baseDatasetId}
+		</if>
+		and exists(
+		select 1
+		from aircas_label_task alt
+		where alt.del_flag = '0' and alt.base_dataset_id = abd.base_dataset_id
+		<if test="query.taskId != null and query.taskId != ''">
+			and alt.task_id = #{query.taskId}
+		</if>
+		<if test="query.taskName != null and query.taskName != ''">
+			and alt.task_name like concat('%',#{query.taskName},'%')
+		</if>
+		<if test="query.labelType != null and query.labelType != ''">
+			and alt.label_type = #{query.labelType}
+		</if>
+		<if test="query.subLabelType != null and query.subLabelType != ''">
+			and alt.sub_label_type = #{query.subLabelType}
+		</if>
+		)
+		order by abd.create_time desc
+	</select>
+	<select id="listAllByBaseDatasetId" resultMap="TaskResultMap">
+		select alt.task_id,
+			   alt.task_name,
+			   alt.base_dataset_id,
+			   abd.base_dataset_name,
+			   alt.label_type,
+			   alt.sub_label_type,
+			   alt.data_type,
+			   alt.tag_ids,
+			   abd.count                                     as image_count,
+			   alt.create_time,
+			   alt.create_by,
+			   alt.update_time,
+			   alt.update_by,
+			   count(case when al.del_flag = '0' then 1 end) as label_count,
+			   alt.intelligent_annotation_url,
+			   alt.description
+		from aircas_label_task alt
+				 left join aircas_base_dataset abd on alt.base_dataset_id = abd.base_dataset_id
+				 left join aircas_label al on al.task_id = alt.task_id
+		where abd.del_flag = '0'
+		  and alt.base_dataset_id = #{id}
+		group by alt.task_id
+		order by max(alt.create_time) desc
+	</select>
+	<select id="selectLabelTaskByIds" resultMap="TaskResultMap">
+		select alt.task_id, alt.task_name, alt.base_dataset_id, abd.base_dataset_name,
+		alt.label_type,alt.sub_label_type,alt.data_type,alt.tag_ids,abd.count as image_count,alt.create_time,
+		alt.create_by, alt.update_time,alt.update_by,count(case when al.del_flag ='0' then 1 end) as label_count,
+		alt.intelligent_annotation_url,alt.description
+		from aircas_label_task alt
+		left join aircas_base_dataset abd on alt.base_dataset_id = abd.base_dataset_id
+		left join aircas_label al on al.task_id = alt.task_id
+		<where>
+			alt.del_flag = '0'
+			<if test="list != null and list.size() > 0">
+				and alt.base_dataset_id in
+				<foreach item="id" collection="list" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="query.taskId != null and query.taskId != ''">
+				and alt.task_id = #{query.taskId}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				and alt.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.taskName != null and query.taskName != ''">
+				and alt.task_name like concat('%',#{query.taskName},'%')
+			</if>
+			<if test="query.labelType != null and query.labelType != ''">
+				and alt.label_type = #{query.labelType}
+			</if>
+			<if test="query.subLabelType != null and query.subLabelType != ''">
+				and alt.sub_label_type = #{query.subLabelType}
+			</if>
+		</where>
+		group by alt.task_id
+		order by max(alt.create_time) desc
+	</select>
+</mapper>

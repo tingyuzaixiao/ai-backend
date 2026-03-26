@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.train.platform.admin.mapper.BizDatasetMapper">
+
+    <resultMap id="BaseResultMap" type="com.train.platform.admin.api.vo.DatasetVO">
+            <id property="datasetId" column="dataset_id" jdbcType="BIGINT"/>
+            <result property="baseDatasetId" column="base_dataset_id" jdbcType="BIGINT"/>
+		    <result property="baseDatasetName" column="base_dataset_name" jdbcType="VARCHAR"/>
+            <result property="datasetName" column="dataset_name" jdbcType="VARCHAR"/>
+            <result property="progress" column="progress" jdbcType="VARCHAR"/>
+            <result property="count" column="count" jdbcType="INTEGER"/>
+            <result property="dataType" column="data_type" jdbcType="CHAR"/>
+		    <result property="size" column="size" jdbcType="BIGINT"/>
+            <result property="version" column="version" jdbcType="VARCHAR"/>
+            <result property="labelType" column="label_type" jdbcType="CHAR"/>
+            <result property="firstPicture" column="first_picture" jdbcType="VARCHAR"/>
+            <result property="labelJson" column="label_json" jdbcType="VARCHAR"/>
+			<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+			<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+		    <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+		    <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		dataset_id
+		,base_dataset_id,dataset_name,
+        progress,count,data_type,size,
+        version,label_type,
+        first_picture,label_json
+	</sql>
+    <update id="updateDataset">
+		UPDATE
+		aircas_dataset
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="datasetName!= null and datasetName!= ''">
+				dataset_name = #{datasetName},
+			</if>
+			<if test="progress!= null and progress!= ''">
+				progress = #{progress},
+			</if>
+			<if test="count!= null and count!= ''">
+				count = #{count},
+			</if>
+			<if test="dataType!= null and dataType!= ''">
+				data_type = #{dataType},
+			</if>
+			<if test="size!= null and size!= ''">
+				size = #{size},
+			</if>
+			<if test="version!= null and version!= ''">
+				version = #{version},
+			</if>
+			<if test="labelType!= null and labelType!= ''">
+				label_type = #{labelType},
+			</if>
+			<if test="firstPicture!= null and firstPicture!= ''">
+				first_picture = #{firstPicture},
+			</if>
+			<if test="labelJson!= null and labelJson!= ''">
+				label_json = #{labelJson},
+			</if>
+			update_time = now(),
+			update_by = #{updateBy}
+		</trim>
+		<where>
+			<if test="datasetId!= null and datasetId!= ''">
+				dataset_id = #{datasetId}
+			</if>
+			<if test="baseDatasetId!= null and baseDatasetId!= ''">
+				and base_dataset_id = #{baseDatasetId}
+			</if>
+		</where>
+	</update>
+	<update id="updateDatasetByBaseDataset">
+		UPDATE
+		aircas_dataset
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="count!= null and count!= ''">
+				count = #{count},
+			</if>
+			<if test="dataType!= null and dataType!= ''">
+				data_type = #{dataType},
+			</if>
+			update_time = now(),
+			update_by = #{updateBy}
+		</trim>
+		<where>
+			<if test="baseDatasetId!= null and baseDatasetId!= ''">
+				and base_dataset_id = #{baseDatasetId}
+			</if>
+		</where>
+	</update>
+	<select id="listBizDatasetsByBaseDatasetId" resultMap="BaseResultMap">
+		SELECT
+			dataset_id,base_dataset_id,dataset_name,progress,count,data_type,
+			size,create_time,update_time,create_by,update_by,version,
+			label_type,first_picture,label_json
+		FROM
+			aircas_dataset
+		WHERE
+		    del_flag = '0'
+			and base_dataset_id = #{baseDatasetId}
+	</select>
+	<select id="getDatasetsPage" resultMap="BaseResultMap">
+		SELECT
+			ad.dataset_id,ad.base_dataset_id,ad.dataset_name,ad.progress,ad.count,ad.data_type,
+			ad.size,ad.create_time,ad.update_time,ad.create_by,ad.update_by,ad.version,
+			ad.label_type,ad.first_picture,ad.label_json
+		FROM
+			aircas_dataset ad
+		<where>
+			ad.del_flag = '0'
+			<if test="query.datasetName != null and query.datasetName != ''">
+				<bind name="datasetNameLike" value="'%'+query.datasetName+'%'"/>
+				AND ad.dataset_name LIKE #{datasetNameLike}
+			</if>
+			<if test="query.baseDatasetId != null and query.baseDatasetId != ''">
+				AND ad.base_dataset_id = #{query.baseDatasetId}
+			</if>
+			<if test="query.dataType != null and query.dataType != ''">
+				AND ad.data_type = #{query.dataType}
+			</if>
+			<if test="query.version != null and query.version != ''">
+				AND ad.version = #{query.version}
+			</if>
+			<if test="query.labelType != null and query.labelType != ''">
+				AND ad.label_type = #{query.labelType}
+			</if>
+		</where>
+
+		<if test="_databaseId != 'mssql'">
+			ORDER BY ad.create_time DESC
+		</if>
+	</select>
+	<select id="getLabelListById" resultType="java.lang.String" parameterType="java.lang.Long">
+		SELECT
+			abd.label_json
+		FROM
+			aircas_dataset ad left join aircas_base_dataset abd on ad.base_dataset_id = abd.base_dataset_id
+		WHERE
+			ad.dataset_id = #{datasetId}
+	</select>
+    <select id="getDatasetVOById" resultMap="BaseResultMap"
+            parameterType="java.lang.Long">
+		select ad.dataset_id,ad.base_dataset_id,ad.dataset_name,ad.progress,ad.count,ad.data_type,
+			   ad.size,ad.create_time,ad.update_time,ad.create_by,ad.update_by,ad.version,
+			   ad.label_type,ad.first_picture,ad.label_json,abd.base_dataset_name
+		from aircas_dataset ad left join aircas_base_dataset abd on ad.base_dataset_id = abd.base_dataset_id
+		where ad.dataset_id = #{datasetId}
+	</select>
+</mapper>

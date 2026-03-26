@@ -1,0 +1,8 @@
+com.train.platform.common.security.service.PlatformUserDetailsServiceImpl
+com.train.platform.common.security.service.PlatformAppUserDetailsServiceImpl
+com.train.platform.common.security.service.PlatformRedisOAuth2AuthorizationService
+com.train.platform.common.security.service.PlatformRedisOAuth2AuthorizationConsentService
+com.train.platform.common.security.component.PlatformSecurityInnerAspect
+com.train.platform.common.security.component.PlatformSecurityMessageSourceConfiguration
+com.train.platform.common.security.service.PlatformRemoteRegisteredClientRepository
+com.train.platform.common.security.component.filter.ServiceAuthFilterConfig
