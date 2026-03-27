@@ -88,7 +88,7 @@ aliyun:
 # mlflow 配置
 mlflow:
   config:
-    uri: http://127.0.0.1:5000
+    uri: http://172.18.10.103:5000
 
 # inner server配置
 service:

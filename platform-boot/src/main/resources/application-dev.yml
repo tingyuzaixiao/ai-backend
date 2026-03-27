@@ -86,6 +86,11 @@ aliyun:
       accessKeySecret:  ${ACCESS_KEY_SECRET}
       signName: "AI算法训练平台"
 
+# mlflow 配置
+mlflow:
+  config:
+    uri: http://172.18.10.103:5000
+
 # inner server配置
 service:
   internal:
