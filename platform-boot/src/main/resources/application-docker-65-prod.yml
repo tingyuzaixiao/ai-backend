@@ -7,21 +7,21 @@ spring:
     type: redis # 缓存类型 Redis
   data:
     redis:
-      host: local-server  # Redis地址
-      password: redis_zcDTKj # Redis密码，没有留空
-      port: 16379  # Redis端口
+      host: 172.18.10.103  # Redis地址
+      password: redis@2026 # Redis密码，没有留空
+      port: 6379  # Redis端口
   # 数据库相关配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: aircas
-    password: aircas@2024
-    url: jdbc:mysql://local-server:3307/platform?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true&nullCatalogMeansCurrent=true
+    password: aircas@2026
+    url: jdbc:mysql://172.18.10.103:3306/platform?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&characterEncoding=UTF-8&useLegacyDatetimeCode=false
 
 # 本地文件系统
 file:
   local:
     enable: true
-    base-path: /opt/ai/prod/imgs
+    base-path: /ai/prod/imgs
   #    base-path: D:/opt/ai/imgs
     local-area-network: http://172.18.10.65:88/admin/sys-file/
     external-network: http://prod.aircas.icu:81/admin/sys-file/
@@ -73,7 +73,8 @@ jasypt:
 
 # swagger 配置
 swagger:
-  token-url: ${swagger.gateway}/admin/oauth2/token
+  token-url: http://localhost:9998/admin/oauth2/token
+#  token-url: ${swagger.gateway}/admin/oauth2/token
 
 platform:
   version: 1.0.0

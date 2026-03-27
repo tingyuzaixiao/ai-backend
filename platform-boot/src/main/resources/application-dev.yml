@@ -24,7 +24,7 @@ file:
     base-path: /ai/dev/imgs
     local-area-network: http://172.18.10.65/admin/sys-file/
     external-network: http://train.aircas.icu:81/admin/sys-file/
-#    base-path: D:/opt/ai/imgs
+  #    base-path: D:/opt/ai/imgs
   bucketName: local
   nginx-path: /nginx/Windows/nginx-1.28.0
   oss:
@@ -85,3 +85,8 @@ aliyun:
       accessKeyId: ${ACCESS_KEY_ID}
       accessKeySecret:  ${ACCESS_KEY_SECRET}
       signName: "AI算法训练平台"
+
+# inner server配置
+service:
+  internal:
+    key: ENC(VGPVMPDTVWQ6DIBhlFN9Iea5XvcdwbOUer3P0CRMpUM=) # platform_inner_service
