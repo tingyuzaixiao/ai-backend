@@ -27,18 +27,6 @@
             <artifactId>platform-upms-biz</artifactId>
             <version>${revision}</version>
         </dependency>
-        <!--可选：代码生成模块-->
-<!--        <dependency>-->
-<!--            <groupId>com.train</groupId>-->
-<!--            <artifactId>platform-codegen</artifactId>-->
-<!--            <version>${revision}</version>-->
-<!--        </dependency>-->
-        <!--可选：定时任务模块-->
-        <dependency>
-            <groupId>com.train</groupId>
-            <artifactId>platform-quartz</artifactId>
-            <version>${revision}</version>
-        </dependency>
         <!--安全模块-->
         <dependency>
             <groupId>com.train</groupId>
@@ -83,6 +71,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>io.fabric8</groupId>

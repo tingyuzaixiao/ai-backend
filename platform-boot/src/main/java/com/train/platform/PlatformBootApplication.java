@@ -11,13 +11,11 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * @author lee
  */
-@ComponentScan(basePackages = {
-		"com.train.platform",
-		"com.train.platform.admin"
-})
 @EnablePlatformDoc(value = "admin", isMicro = false)
 @EnablePlatformResourceServer
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+		"com.train.platform"
+})
 @EnableFileStorage
 public class PlatformBootApplication {
 
