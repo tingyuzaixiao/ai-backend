@@ -14,8 +14,8 @@ spring:
         enabled: false
   main:
     allow-bean-definition-overriding: true # 允许覆盖bean定义
-  profiles:
-    active: local # 激活dev，对应 application-docker-65.yml
+#  profiles:
+#    active: dev # 激活dev，对应 application-docker-65.yml
 ## spring security 对外暴露接口设置（不鉴权直接可访问）
 security:
   micro: false
