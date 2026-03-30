@@ -344,6 +344,11 @@
         </profile>
         <profile>
             <id>boot</id>
+            <properties>
+                <!-- boot环境也使用dev配置 -->
+                <profiles.active>dev</profiles.active>
+                <!-- boot环境不需要nacos配置，不定义这些属性 -->
+            </properties>
             <modules>
                 <module>platform-boot</module>
             </modules>
