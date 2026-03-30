@@ -30,20 +30,22 @@ import org.springframework.stereotype.Service;
 /**
  * @author frwcloud 异步监听定时任务事件
  */
+// db定时任务，后续删除
 @Slf4j
-@Service
-@RequiredArgsConstructor
+//@Service
+//@RequiredArgsConstructor
 public class SysJobListener {
 
-	private final TaskInvokUtil taskInvokUtil;
+//	private final TaskInvokUtil taskInvokUtil;
 
-	@Async
-	@Order
-	@EventListener(SysJobEvent.class)
-	public void comSysJob(SysJobEvent event) {
-		SysJob sysJob = event.getSysJob();
-		Trigger trigger = event.getTrigger();
-		taskInvokUtil.invokMethod(sysJob, trigger);
-	}
+// db定时任务，后续删除
+//	@Async
+//	@Order
+//	@EventListener(SysJobEvent.class)
+//	public void comSysJob(SysJobEvent event) {
+//		SysJob sysJob = event.getSysJob();
+//		Trigger trigger = event.getTrigger();
+//		taskInvokUtil.invokMethod(sysJob, trigger);
+//	}
 
 }
