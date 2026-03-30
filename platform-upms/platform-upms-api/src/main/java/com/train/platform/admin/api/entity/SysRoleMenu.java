@@ -19,10 +19,13 @@
 
 package com.train.platform.admin.api.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serial;
 
 /**
  * <p>
@@ -35,10 +38,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @Schema(description = "角色菜单")
 @EqualsAndHashCode(callSuper = true)
+@TableName("sys_role_menu")
 public class SysRoleMenu extends Model<SysRoleMenu> {
-
-	private static final long serialVersionUID = 1L;
-
+	@Serial
+	private static final long serialVersionUID = 8683464672914959446L;
 	/**
 	 * 角色ID
 	 */

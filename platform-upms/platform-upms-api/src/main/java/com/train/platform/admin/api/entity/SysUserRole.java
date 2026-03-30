@@ -19,6 +19,7 @@
 
 package com.train.platform.admin.api.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -35,6 +36,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Schema(description = "用户角色")
 @EqualsAndHashCode(callSuper = true)
+@TableName("sys_user_role")
 public class SysUserRole extends Model<SysUserRole> {
 
 	private static final long serialVersionUID = 1L;

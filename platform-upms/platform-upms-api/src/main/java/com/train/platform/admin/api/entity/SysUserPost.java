@@ -16,6 +16,7 @@
 
 package com.train.platform.admin.api.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -30,6 +31,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@TableName("sys_user_post")
 public class SysUserPost extends Model<SysUserPost> {
 
 	private static final long serialVersionUID = 1L;
