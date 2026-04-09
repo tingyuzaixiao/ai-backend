@@ -7,7 +7,7 @@ spring:
     type: redis # 缓存类型 Redis
   data:
     redis:
-      host: localhost  # Redis地址
+      host: 172.18.10.117  # Redis地址
       password: redis@2026 # Redis密码，没有留空
       port: 6379  # Redis端口
   # 数据库相关配置
@@ -15,7 +15,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: aircas
     password: aircas@2026
-    url: jdbc:mysql://localhost:3306/platform?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&characterEncoding=UTF-8&useLegacyDatetimeCode=false
+    url: jdbc:mysql://172.18.10.117:3306/platform?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&characterEncoding=UTF-8&useLegacyDatetimeCode=false
 
 # 本地文件系统
 file:
