@@ -7,7 +7,7 @@ spring:
     type: redis # 缓存类型 Redis
   data:
     redis:
-      host: 172.18.10.103 # Redis地址
+      host: localhost # Redis地址
       password: redis_dev@2026 # Redis密码，没有留空
       port: 6389  # Redis端口
   # 数据库相关配置
@@ -15,7 +15,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: aircas_dev
     password: aircas_dev@2026
-    url: jdbc:mysql://172.18.10.103:3306/platform_dev?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&characterEncoding=UTF-8&useLegacyDatetimeCode=false
+    url: jdbc:mysql://localhost:3306/platform_dev?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&characterEncoding=UTF-8&useLegacyDatetimeCode=false
 
 # 文件系统
 file:
@@ -89,7 +89,7 @@ aliyun:
 # mlflow 配置
 mlflow:
   config:
-    uri: http://172.18.10.103:5000
+    uri: http://localhost:5000
 
 # inner server配置
 service:
